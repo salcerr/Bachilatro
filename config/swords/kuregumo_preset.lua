@@ -2,15 +2,12 @@
 BACHILATRO_SWORD_PRESETS = BACHILATRO_SWORD_PRESETS or {}
 
 BACHILATRO_SWORD_PRESETS.kuregumo = {
-    key = 'kuregumo',
     consumable_key = 'c_bachilatro_kuregumo',
     atlas = 'enten_art', -- temporary placeholder until Kuregumo art is added
     pos = { x = 0, y = 0 },
     cost = 3,
-    usage = { mode = 'held' },
     wielder = {
         joker_key = 'j_bachilatro_sojo',
-        relation = 'studies_sword',
         study_required = 20
     },
     abilities = {

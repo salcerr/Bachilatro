@@ -1,5 +1,4 @@
--- Small shared layer for sword presets. Sword-specific behavior stays in its
--- preset/callbacks; optional fields permit nonstandard modes (e.g. proxy use).
+-- Shared lookups and rules for the data stored in sword presets.
 BACHILATRO_SWORD_PRESETS = BACHILATRO_SWORD_PRESETS or {}
 
 function BACHILATRO_get_sword_preset(key)
@@ -45,6 +44,22 @@ function BACHILATRO_sword_has_wielder(preset)
     return false
 end
 
+function BACHILATRO_sword_ability_is_upgraded(preset, ability_key)
+    if type(preset) == 'string' then
+        preset = BACHILATRO_get_sword_preset(preset)
+    end
+    if not preset or not preset.wielder
+        or not BACHILATRO_sword_has_wielder(preset)
+    then
+        return false
+    end
+
+    for _, upgraded_ability in ipairs(preset.wielder.upgrade_abilities or {}) do
+        if upgraded_ability == ability_key then return true end
+    end
+    return false
+end
+
 
 function BACHILATRO_has_sword(key)
     return BACHILATRO_find_sword(key) ~= nil
@@ -67,15 +82,16 @@ end
 function BACHILATRO_sword_selection_limit(area, base_limit)
     local limit = base_limit or 1
     for key, preset in pairs(BACHILATRO_SWORD_PRESETS) do
-        if BACHILATRO_has_sword(key)
-            and BACHILATRO_sword_has_wielder(preset) then
+        if BACHILATRO_has_sword(key) then
             for _, ability in ipairs(preset.abilities or {}) do
                 local selection = ability.selection
                 if selection and selection.area == area then
-                    local required = selection.upgraded_max
-                        or selection.upgraded_min
-                        or selection.max
-                        or selection.min
+                    local required = selection.max or selection.min
+                    if BACHILATRO_sword_ability_is_upgraded(preset, ability.key) then
+                        required = selection.upgraded_max
+                            or selection.upgraded_min
+                            or required
+                    end
                     limit = math.max(limit, required or 1)
                 end
             end

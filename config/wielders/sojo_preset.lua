@@ -1,8 +1,6 @@
 -- Sojo studies Kuregumo over multiple ability uses; he does not upgrade it on pickup.
 BACHILATRO_WIELDER_PRESETS = BACHILATRO_WIELDER_PRESETS or {}
 BACHILATRO_WIELDER_PRESETS.sojo = {
-    key = 'sojo',
-    joker_key = 'j_bachilatro_sojo',
     sword_key = 'kuregumo',
     rarity = 3,
     cost = 7,

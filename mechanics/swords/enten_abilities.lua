@@ -7,10 +7,16 @@ function BACHILATRO_is_aka_target_valid(joker)
         return false
     end
 
+    local aka = BACHILATRO_get_sword_ability('enten', 'aka')
+    local rules = aka and aka.allowed_targets or {}
     local center = joker.config.center
-    return center.blueprint_compat
-        and center.key ~= 'j_blueprint'
-        and center.key ~= 'j_brainstorm'
+    if rules.require_blueprint_compat and not center.blueprint_compat then
+        return false
+    end
+    for _, excluded_key in ipairs(rules.excluded_jokers or {}) do
+        if center.key == excluded_key then return false end
+    end
+    return true
 end
 
 function BACHILATRO_all_aka_targets_valid(targets)
@@ -20,8 +26,8 @@ function BACHILATRO_all_aka_targets_valid(targets)
     return true
 end
 
-function BACHILATRO_has_chihiro()
-    return BACHILATRO_sword_has_wielder('enten')
+local function enten_ability_upgraded(ability_key)
+    return BACHILATRO_sword_ability_is_upgraded('enten', ability_key)
 end
 
 function BACHILATRO_kuro_selection_count()
@@ -30,7 +36,7 @@ function BACHILATRO_kuro_selection_count()
     if not G.hand or not ability then return 0 end
 
     local selected = #G.hand.highlighted
-    local upgraded = BACHILATRO_sword_has_wielder(preset)
+    local upgraded = enten_ability_upgraded('kuro')
     local minimum = upgraded and (ability.selection.upgraded_min or ability.selection.min)
         or ability.selection.min
     local maximum = upgraded and (ability.selection.upgraded_max or ability.selection.max)
@@ -42,14 +48,14 @@ end
 function BACHILATRO_aka_selection_count()
     local ability = BACHILATRO_get_sword_ability('enten', 'aka')
     if not ability then return 0 end
-    return BACHILATRO_has_chihiro()
+    return enten_ability_upgraded('aka')
         and (ability.selection.upgraded_min or ability.selection.min)
         or ability.selection.min
 end
 
 function BACHILATRO_aka_cost()
     return BACHILATRO_get_sword_ability_cost(
-        'enten', 'aka', BACHILATRO_has_chihiro()
+        'enten', 'aka', enten_ability_upgraded('aka')
     )
 end
 
@@ -60,7 +66,13 @@ function BACHILATRO_can_use_nishiki(card)
 
     local blind = G.GAME and G.GAME.blind
     if not blind then return false end
-    if BACHILATRO_has_chihiro() then return true end
+    local nishiki = BACHILATRO_get_sword_ability('enten', 'nishiki')
+    local effect = nishiki and nishiki.blind_effect or {}
+    if effect.any_blind_requires_wielder
+        and BACHILATRO_sword_has_wielder('enten')
+    then
+        return true
+    end
     return blind.boss and not blind.disabled
 end
 
@@ -71,7 +83,7 @@ function BACHILATRO_can_use_enten_ability(card)
     local energy = G.GAME.bachilatro_energy or 0
     if ability == 1 then
         return energy >= BACHILATRO_get_sword_ability_cost(
-            'enten', 'kuro', BACHILATRO_has_chihiro()
+            'enten', 'kuro', enten_ability_upgraded('kuro')
         ) and BACHILATRO_kuro_selection_count() > 0
     elseif ability == 2 then
         local highlighted = G.jokers and G.jokers.highlighted or {}
@@ -87,7 +99,7 @@ function BACHILATRO_can_use_enten_ability(card)
         return BACHILATRO_all_aka_targets_valid(highlighted)
     elseif ability == 3 then
         return energy >= BACHILATRO_get_sword_ability_cost(
-            'enten', 'nishiki', BACHILATRO_has_chihiro()
+            'enten', 'nishiki', enten_ability_upgraded('nishiki')
         ) and BACHILATRO_can_use_nishiki(card)
     end
     return false
@@ -109,7 +121,7 @@ function BACHILATRO_use_enten_ability(card)
         G.hand:unhighlight_all()
 
         BACHILATRO_spend_energy(BACHILATRO_get_sword_ability_cost(
-            'enten', 'kuro', BACHILATRO_has_chihiro()
+            'enten', 'kuro', enten_ability_upgraded('kuro')
         ))
         G.E_MANAGER:add_event(Event({
             trigger = 'after',
@@ -151,8 +163,8 @@ function BACHILATRO_use_enten_ability(card)
         })
     elseif ability == 3 then
         local blind = G.GAME.blind
-        local chihiro = BACHILATRO_has_chihiro()
-        local cost = BACHILATRO_get_sword_ability_cost('enten', 'nishiki', chihiro)
+        local upgraded = enten_ability_upgraded('nishiki')
+        local cost = BACHILATRO_get_sword_ability_cost('enten', 'nishiki', upgraded)
         if not BACHILATRO_can_use_nishiki(card)
             or (G.GAME.bachilatro_energy or 0) < cost
         then
@@ -160,16 +172,18 @@ function BACHILATRO_use_enten_ability(card)
         end
 
         BACHILATRO_spend_energy(cost)
-        if chihiro then
-            local nishiki = BACHILATRO_get_sword_ability('enten', 'nishiki')
+        local nishiki = BACHILATRO_get_sword_ability('enten', 'nishiki')
+        local effect = nishiki.blind_effect
+        local has_wielder = BACHILATRO_sword_has_wielder('enten')
+        if not effect.reduction_requires_wielder or has_wielder then
             blind.chips = math.max(
                 1,
-                math.floor(blind.chips * (1 - nishiki.blind_effect.score_reduction))
+                math.floor(blind.chips * (1 - effect.score_reduction))
             )
             blind.chip_text = number_format(blind.chips)
             SMODS.juice_up_blind()
         end
-        if blind.boss then blind:disable() end
+        if blind.boss and effect.disables_boss_blind then blind:disable() end
         play_sound('timpani')
         card_eval_status_text(card, 'extra', nil, nil, nil, {
             message = 'NISHIKI',
@@ -187,7 +201,7 @@ G.FUNCS.bachilatro_can_use_kuro = function(e)
         and BACHILATRO_kuro_selection_count() > 0
         and G.GAME
         and (G.GAME.bachilatro_energy or 0) >= BACHILATRO_get_sword_ability_cost(
-            'enten', 'kuro', BACHILATRO_has_chihiro()
+            'enten', 'kuro', enten_ability_upgraded('kuro')
         )
     e.config.button = can_use and 'bachilatro_enten_kuro' or nil
     e.config.colour = can_use and HEX('707070') or HEX('353535')
@@ -214,7 +228,7 @@ G.FUNCS.bachilatro_can_use_nishiki = function(e)
     local can_use = card
         and G.GAME
         and (G.GAME.bachilatro_energy or 0) >= BACHILATRO_get_sword_ability_cost(
-            'enten', 'nishiki', BACHILATRO_has_chihiro()
+            'enten', 'nishiki', enten_ability_upgraded('nishiki')
         )
         and BACHILATRO_can_use_nishiki(card)
     e.config.button = can_use and 'bachilatro_enten_nishiki' or nil
@@ -231,7 +245,7 @@ end
 G.FUNCS.bachilatro_enten_kuro = function(e)
     bachilatro_begin_enten_use(e, 1, function()
         return (G.GAME.bachilatro_energy or 0) >= BACHILATRO_get_sword_ability_cost(
-            'enten', 'kuro', BACHILATRO_has_chihiro()
+            'enten', 'kuro', enten_ability_upgraded('kuro')
         ) and BACHILATRO_kuro_selection_count() > 0
     end)
 end
@@ -251,7 +265,7 @@ end
 G.FUNCS.bachilatro_enten_nishiki = function(e)
     bachilatro_begin_enten_use(e, 3, function(card)
         return (G.GAME.bachilatro_energy or 0) >= BACHILATRO_get_sword_ability_cost(
-            'enten', 'nishiki', BACHILATRO_has_chihiro()
+            'enten', 'nishiki', enten_ability_upgraded('nishiki')
         ) and BACHILATRO_can_use_nishiki(card)
     end)
 end
