@@ -6,8 +6,8 @@ SMODS.Joker {
         name = 'Genichi Sojo',
         text = {
             'Study Kuregumo through its techniques.',
-            'Each use gives {X:mult,C:white}X#1#{} Mult and',
-            'each affected card gives {C:attention}#2#{} Study.',
+            'Each use grants {X:mult,C:white}X#1#{} Mult.',
+            'Each affected card grants {C:attention}#2#{} Study.',
             'At {C:attention}#3#{} Study, improve Kuregumo.',
             'Study: {C:attention}#4#/#3#{}',
             'Current: {X:mult,C:white}X#5#{} Mult.'

@@ -8,13 +8,8 @@ SMODS.Enhancement {
     in_pool = function(self, args) return false end,
     loc_txt = {
         name = 'Wet',
-        text = { 'Kou prepares this card for Mei and Yui' }
-    },
-    calculate = function(self, card, context)
-        if context.discard and context.other_card == card then
-            BACHILATRO_clear_kuregumo_status(card)
-        end
-    end
+        text = { '{C:attention}Kou{} prepares this card for Mei and Yui.' }
+    }
 }
 
 SMODS.Enhancement {
@@ -26,24 +21,27 @@ SMODS.Enhancement {
     in_pool = function(self, args) return false end,
     loc_txt = {
         name = 'Shocked',
-        text = { '#1#' }
+        text = {
+            '{C:attention}Shocked{} is removed after play or discard.',
+            'Each scored card gives {V:1}#1#{}.'
+        }
     },
     loc_vars = function(self, info_queue, card)
         local scoring = BACHILATRO_SWORD_PRESETS.kuregumo.status_effects.shocked
         local effect
         if BACHILATRO_kuregumo_is_upgraded() then
             effect = string.format(
-                'Each scored card gives XMult equal to %g + %g per Shocked card in the deck.',
+                'X%g + X%g per Shocked card in the deck',
                 scoring.upgraded_xmult_base,
                 scoring.upgraded_xmult_per_deck_card
             )
         else
             effect = string.format(
-                'Each scored card gives +%g Mult per Shocked card played this hand.',
+                '+%g Mult per Shocked card played this hand',
                 scoring.mult_per_shocked_card_played
             )
         end
-        return { vars = { effect } }
+        return { vars = { effect, colours = { G.C.MULT } } }
     end,
     calculate = function(self, card, context)
         if context.main_scoring and context.cardarea == G.play then

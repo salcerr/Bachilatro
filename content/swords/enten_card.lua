@@ -10,10 +10,10 @@ SMODS.Consumable {
         name = 'Enten',
         text = {
             "It yearns for its owner.",
-            "{C:attention}KURO{}: Destroy #1# selected cards. (#6# Energy)",
-            "{C:attention}AKA{}: #2# (#3# Energy)",
-            "{C:attention}NISHIKI{}: #4#",
-            "#5# (#7# Energy)"
+            "{C:attention}KURO{}: Destroy #1# selected cards. {C:blue}(#2# Energy){}",
+            "{C:attention}AKA{}: #3# {C:blue}(#4# Energy){}",
+            "{C:attention}NISHIKI{}: #5#",
+            "#6# {C:blue}(#7# Energy){}"
         }
     },
 
@@ -40,6 +40,7 @@ SMODS.Consumable {
         return {
             vars = {
                 kuro_text,
+                BACHILATRO_get_sword_ability_cost('enten', 'kuro', kuro_upgraded),
                 aka_text,
                 BACHILATRO_get_sword_ability_cost('enten', 'aka', aka_upgraded),
                 nishiki_upgraded
@@ -50,7 +51,6 @@ SMODS.Consumable {
                 nishiki_upgraded
                     and 'Boss Blind: also disable its effect'
                     or 'Disable its effect',
-                BACHILATRO_get_sword_ability_cost('enten', 'kuro', kuro_upgraded),
                 BACHILATRO_get_sword_ability_cost('enten', 'nishiki', nishiki_upgraded)
             }
         }

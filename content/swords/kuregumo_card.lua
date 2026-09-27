@@ -10,9 +10,9 @@ SMODS.Consumable {
         name = 'Kuregumo',
         text = {
             'Its three techniques flow as one.',
-            '{C:attention}KOU{}: #1# (#2# Energy)',
-            '{C:attention}MEI{}: #3# (#4# Energy)',
-            '{C:attention}YUI{}: #5# (#6# Energy)'
+            '{C:attention}KOU{}: Make up to #1# selected cards {C:blue}Wet{}. {C:blue}(#2# Energy){}',
+            '{C:attention}MEI{}: Shock #3#. {C:blue}(#4# Energy){}',
+            '{C:attention}YUI{}: Reduce Blind target by {C:chips}#5#{} per {C:blue}Wet{} card in #6#. {C:blue}(#7# Energy){}'
         }
     },
 
@@ -25,19 +25,16 @@ SMODS.Consumable {
             and yui.upgraded_score_reduction_per_wet_card
             or yui.score_reduction_per_wet_card
         local mei_text = upgraded
-            and 'Turn every card in the deck into Shocked.'
-            or 'Turn Wet cards in hand into Shocked.'
-        local yui_text = 'Blind target -'
-            .. math.floor(reduction_per_card * 100)
-            .. '% per Wet card in '
-            .. (upgraded and 'deck.' or 'hand.')
+            and 'all cards in your deck'
+            or 'Wet cards in your hand'
         return {
             vars = {
-                'Wet up to ' .. kou.selection.max .. ' selected cards.',
+                kou.selection.max,
                 BACHILATRO_get_sword_ability_cost('kuregumo', 'kou', upgraded),
                 mei_text,
                 BACHILATRO_get_sword_ability_cost('kuregumo', 'mei', upgraded),
-                yui_text,
+                math.floor(reduction_per_card * 100) .. '%',
+                upgraded and 'the deck' or 'your hand',
                 BACHILATRO_get_sword_ability_cost('kuregumo', 'yui', upgraded),
             }
         }

@@ -25,28 +25,33 @@ function BACHILATRO_clear_kuregumo_status(card)
     if not card or not card.config or not card.ability then return end
     local center_key = card.config.center_key
     local was_shocked = center_key == kuregumo_center_key('shocked')
-    local was_wet = center_key == kuregumo_center_key('wet')
-    if not card.ability.bachilatro_original_center and not was_shocked and not was_wet then return end
-    local original = was_shocked
-        and G.P_CENTERS.c_base
-        or G.P_CENTERS[card.ability.bachilatro_original_center or 'c_base']
-        or G.P_CENTERS.c_base
+    if not was_shocked then return end
+
+    local restore_key = card.ability.bachilatro_shocked_from_center
+        or card.ability.bachilatro_original_center
+        or 'c_base'
+    local original = G.P_CENTERS[restore_key] or G.P_CENTERS.c_base
     card:set_ability(original)
     card.ability.bachilatro_original_center = nil
+    card.ability.bachilatro_shocked_from_center = nil
 end
 
 local function apply_kuregumo_status(card, status)
     if not card or not card.config then return false end
     if card.config.center_key == kuregumo_center_key(status) then return false end
 
-    local original_center = card.ability and card.ability.bachilatro_original_center
-        or card.config.center_key
-    if status == 'shocked' then original_center = 'c_base' end
+    local shocked_from_center
+    if status == 'shocked' then
+        -- Shocked is temporary: remember the enhancement it replaces so the
+        -- card can return to Wet (or its previous enhancement) afterward.
+        shocked_from_center = card.config.center_key
+    end
     local center = G.P_CENTERS[kuregumo_center_key(status)]
     if not center then return false end
 
     card:set_ability(center)
-    card.ability.bachilatro_original_center = original_center
+    card.ability.bachilatro_original_center = nil
+    card.ability.bachilatro_shocked_from_center = shocked_from_center
     return true
 end
 

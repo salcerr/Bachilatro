@@ -6,8 +6,8 @@ SMODS.Joker {
         name = 'Chihiro Rokuhira',
         text = {
             "The bearer Enten was forged for.",
-            'After defeating a Blind, gain {C:mult}X#1#{} Mult.',
-            'Current: {C:mult}X#2#{} Mult.'
+            'After defeating a Blind, gain {X:mult,C:white}X#1#{} Mult.',
+            'Current: {X:mult,C:white}X#2#{} Mult.'
         }
     },
 
