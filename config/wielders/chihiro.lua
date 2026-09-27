@@ -7,7 +7,6 @@ BACHILATRO_WIELDER_PRESETS.chihiro = {
     rarity = 2,
     cost = 6,
     ability = {
-        mult_per_blind = 3,
-        mult_cap = 18
+        xmult_per_blind = 0.05
     }
 }

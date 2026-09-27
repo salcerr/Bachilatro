@@ -10,12 +10,12 @@ SMODS.Joker {
 
         text = {
             "The bearer Enten was forged for.",
-            'After defeating a Blind, gain {C:mult}+#1#{} Mult.',
-            'Current: {C:mult}+#3#{} Mult (max {C:mult}+#2#{}).'
+            'After defeating a Blind, gain {C:mult}X#1#{} Mult.',
+            'Current: {C:mult}X#2#{} Mult.'
         }
     },
 
-    atlas = 'Joker',
+    atlas = BACHILATRO_CHIHIRO_ATLAS,
     prefix_config = { atlas = false },
 
     pos = {
@@ -34,20 +34,18 @@ SMODS.Joker {
 
     config = {
         extra = {
-            mult_mod = BACHILATRO_WIELDER_PRESETS.chihiro.ability.mult_per_blind,
-            mult_cap = BACHILATRO_WIELDER_PRESETS.chihiro.ability.mult_cap,
-            mult = 0
+            xmult_mod = BACHILATRO_WIELDER_PRESETS.chihiro.ability.xmult_per_blind,
+            xmult = 1
         }
     },
 
     loc_vars = function(self, info_queue, card)
-        local current_mult = card and card.ability.extra.mult
-            or self.config.extra.mult
+        local current_xmult = card and card.ability.extra.xmult
+            or self.config.extra.xmult
         return {
             vars = {
-                self.config.extra.mult_mod,
-                self.config.extra.mult_cap,
-                current_mult
+                string.format('%.2f', self.config.extra.xmult_mod),
+                string.format('%.2f', current_xmult)
             }
         }
     end,
@@ -72,15 +70,15 @@ SMODS.Joker {
     end,
 
     calculate = function(self, card, context)
-        if context.joker_main and card.ability.extra.mult > 0 then
+        if context.joker_main and card.ability.extra.xmult > 1 then
             return {
                 message = localize{
                     type = 'variable',
-                    key = 'a_mult',
-                    vars = { card.ability.extra.mult }
+                    key = 'a_xmult',
+                    vars = { card.ability.extra.xmult }
                 },
                 colour = G.C.MULT,
-                mult_mod = card.ability.extra.mult
+                Xmult_mod = card.ability.extra.xmult
             }
         end
 
@@ -89,15 +87,18 @@ SMODS.Joker {
             and not context.blueprint
             and not context.game_over
             and G.GAME.blind
-            and card.ability.extra.mult < self.config.extra.mult_cap
         then
-            card.ability.extra.mult = math.min(
-                self.config.extra.mult_cap,
-                card.ability.extra.mult + self.config.extra.mult_mod
-            )
+            card.ability.extra.xmult = math.floor((
+                card.ability.extra.xmult + self.config.extra.xmult_mod
+            ) * 100 + 0.5) / 100
             return {
-                message = 'Tempered',
-                colour = G.C.MULT
+                message = localize{
+                    type = 'variable',
+                    key = 'a_xmult',
+                    vars = { card.ability.extra.xmult }
+                },
+                colour = G.C.MULT,
+                card = card
             }
         end
     end
