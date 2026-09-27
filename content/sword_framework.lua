@@ -16,6 +16,15 @@ function BACHILATRO_get_sword_ability(preset, ability_key)
     end
 end
 
+function BACHILATRO_get_sword_preset_for_card(card)
+    local center_key = card and card.config and card.config.center_key
+    if not center_key then return nil end
+    for _, preset in pairs(BACHILATRO_SWORD_PRESETS) do
+        if preset.consumable_key == center_key then return preset end
+    end
+    return nil
+end
+
 function BACHILATRO_get_sword_ability_cost(preset, ability_key, upgraded)
     local ability = BACHILATRO_get_sword_ability(preset, ability_key)
     if not ability then return nil end

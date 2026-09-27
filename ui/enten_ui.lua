@@ -68,8 +68,9 @@ end
 -- BOTONES CONFIGURADOS POR EL PRESET DE CADA ESPADA
 --------------------------------------------------
 
-function G.UIDEF.bachilatro_enten_ability_buttons(card)
-    local preset = BACHILATRO_get_sword_preset('enten')
+function G.UIDEF.bachilatro_sword_ability_buttons(card)
+    local preset = BACHILATRO_get_sword_preset_for_card(card)
+    if not preset then return { n = G.UIT.ROOT, config = { padding = 0, colour = G.C.CLEAR }, nodes = {} } end
     local ability_nodes = {}
 
     for _, ability in ipairs(preset.abilities or {}) do
@@ -99,6 +100,8 @@ end
 --------------------------------------------------
 -- BOTÓN SELL
 --------------------------------------------------
+
+G.UIDEF.bachilatro_enten_ability_buttons = G.UIDEF.bachilatro_sword_ability_buttons
 
 function G.UIDEF.bachilatro_enten_sell_button(card)
 
@@ -273,30 +276,28 @@ local bachilatro_legacy_card_highlight =
     Card.highlight
 
 
-local function bachilatro_show_enten_ability_button(card)
+local function bachilatro_show_sword_ability_button(card)
     if card.children.use_button then
         card.children.use_button:remove()
     end
 
     card.children.use_button = UIBox{
-        definition = G.UIDEF.bachilatro_enten_ability_buttons(card),
+        definition = G.UIDEF.bachilatro_sword_ability_buttons(card),
         config = {
             align = 'cl',
             offset = { x = 0.30, y = 0 },
-            major = card
+            -- Keep the original Enten behavior: the UIBox is a child of the
+            -- sword card, so its full button hitboxes follow that card's draw
+            -- order and remain behind cards drawn above it (such as Jokers).
+            parent = card
         }
     }
-    card.children.use_button.bachilatro_enten_overlay = true
-    card.children.use_button.attention_text = true
 end
 
 
 function Card:highlight(is_highlighted)
 
-    if self.config
-        and self.config.center_key
-            == 'c_bachilatro_enten'
-    then
+    if BACHILATRO_get_sword_preset_for_card(self) then
 
         self.highlighted =
             is_highlighted
@@ -318,7 +319,7 @@ function Card:highlight(is_highlighted)
             -- BOTONES DE HABILIDADES
             --------------------------------------------------
 
-            bachilatro_show_enten_ability_button(self)
+            bachilatro_show_sword_ability_button(self)
 
 
 
@@ -400,34 +401,15 @@ local bachilatro_original_card_draw = Card.draw
 
 function Card:draw(layer)
     local sell = self.children.bachilatro_sell_button
-    local enten_buttons
-
-    -- Enten's ability UI is a top-level attention UIBox, drawn after all cards.
-    -- Hide the child reference here so Card.draw does not paint it underneath
-    -- the later-drawn Joker buttons.
-    if self.config
-        and self.config.center_key == 'c_bachilatro_enten'
-        and self.children.use_button
-        and self.children.use_button.bachilatro_enten_overlay
-    then
-        enten_buttons = self.children.use_button
-        self.children.use_button = nil
-    end
-
-    local result
     if sell then
         self.children.bachilatro_sell_button = nil
         sell:draw()
-        result = bachilatro_original_card_draw(self, layer)
+        local result = bachilatro_original_card_draw(self, layer)
         self.children.bachilatro_sell_button = sell
+        return result
     else
-        result = bachilatro_original_card_draw(self, layer)
+        return bachilatro_original_card_draw(self, layer)
     end
-
-    if enten_buttons then
-        self.children.use_button = enten_buttons
-    end
-    return result
 end
 
 
