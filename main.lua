@@ -27,7 +27,8 @@ end
 
 SMODS.load_file('content/consumable_types/enchanted_blade_type.lua')()
 SMODS.load_file('content/enhancements/kuregumo_status_cards.lua')()
-SMODS.load_file('content/jokers/wielder_jokers.lua')()
+SMODS.load_file('content/jokers/chihiro_joker.lua')()
+SMODS.load_file('content/jokers/sojo_joker.lua')()
 
 SMODS.Atlas {
     key = 'enten_art',
