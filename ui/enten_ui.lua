@@ -273,6 +273,24 @@ local bachilatro_legacy_card_highlight =
     Card.highlight
 
 
+local function bachilatro_show_enten_ability_button(card)
+    if card.children.use_button then
+        card.children.use_button:remove()
+    end
+
+    card.children.use_button = UIBox{
+        definition = G.UIDEF.bachilatro_enten_ability_buttons(card),
+        config = {
+            align = 'cl',
+            offset = { x = 0.30, y = 0 },
+            major = card
+        }
+    }
+    card.children.use_button.bachilatro_enten_overlay = true
+    card.children.use_button.attention_text = true
+end
+
+
 function Card:highlight(is_highlighted)
 
     if self.config
@@ -300,26 +318,7 @@ function Card:highlight(is_highlighted)
             -- BOTONES DE HABILIDADES
             --------------------------------------------------
 
-            self.children.use_button =
-                UIBox{
-
-                    definition =
-                        G.UIDEF.bachilatro_enten_ability_buttons(
-                            self
-                        ),
-
-                    config = {
-
-                        align = "cl",
-
-                        offset = {
-                            x = 0.30,
-                            y = 0
-                        },
-
-                        parent = self
-                    }
-                }
+            bachilatro_show_enten_ability_button(self)
 
 
 
@@ -383,10 +382,11 @@ function Card:highlight(is_highlighted)
 
 
 
-    return bachilatro_legacy_card_highlight(
+    local result = bachilatro_legacy_card_highlight(
         self,
         is_highlighted
     )
+    return result
 end
 
 
@@ -396,37 +396,38 @@ end
 -- SELL DETRÁS DE ENTEN
 --------------------------------------------------
 
-local bachilatro_original_card_draw =
-    Card.draw
-
+local bachilatro_original_card_draw = Card.draw
 
 function Card:draw(layer)
+    local sell = self.children.bachilatro_sell_button
+    local enten_buttons
 
-    local sell =
-        self.children.bachilatro_sell_button
-
-    if sell then
-
-        self.children.bachilatro_sell_button = nil
-
-        sell:draw()
-
-        bachilatro_original_card_draw(
-            self,
-            layer
-        )
-
-        self.children.bachilatro_sell_button = sell
-
-        return
+    -- Enten's ability UI is a top-level attention UIBox, drawn after all cards.
+    -- Hide the child reference here so Card.draw does not paint it underneath
+    -- the later-drawn Joker buttons.
+    if self.config
+        and self.config.center_key == 'c_bachilatro_enten'
+        and self.children.use_button
+        and self.children.use_button.bachilatro_enten_overlay
+    then
+        enten_buttons = self.children.use_button
+        self.children.use_button = nil
     end
 
+    local result
+    if sell then
+        self.children.bachilatro_sell_button = nil
+        sell:draw()
+        result = bachilatro_original_card_draw(self, layer)
+        self.children.bachilatro_sell_button = sell
+    else
+        result = bachilatro_original_card_draw(self, layer)
+    end
 
-
-    return bachilatro_original_card_draw(
-        self,
-        layer
-    )
+    if enten_buttons then
+        self.children.use_button = enten_buttons
+    end
+    return result
 end
 
 

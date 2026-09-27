@@ -15,7 +15,7 @@ SMODS.ConsumableType {
     loc_txt = {
         name = 'Enchanted Blade',
 
-        collection = 'Enchanted Blade Cards',
+        collection = 'Enchanted Blades',
 
         undiscovered = {
             name = 'Not Discovered',

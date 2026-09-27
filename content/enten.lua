@@ -84,8 +84,8 @@ SMODS.Consumable {
             vars = {
                 chihiro and '2 or 3' or '2',
                 chihiro
-                    and 'Copy two Jokers this round.'
-                    or 'Copy one Joker this round.',
+                    and "Copy 2 selected Jokers this round."
+                    or "Copy a selected Joker this round.",
                 BACHILATRO_get_sword_ability_cost('enten', 'aka', chihiro),
                 chihiro
                     and ('Any Blind: -' .. math.floor(BACHILATRO_get_sword_ability(

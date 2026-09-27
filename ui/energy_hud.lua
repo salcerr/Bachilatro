@@ -475,65 +475,69 @@ end
 
 
 --------------------------------------------------
--- RECARGA AL CAMBIAR DE ANTE
+-- AKA: COPIAR EL EFECTO EN EL CÁLCULO DEL JOKER
 --------------------------------------------------
+
+local bachilatro_original_calculate_joker = Card.calculate_joker
+
+function Card:calculate_joker(context, ...)
+    local effect, triggered = bachilatro_original_calculate_joker(self, context, ...)
+
+    if not context
+        or context.blueprint
+        or context.no_blueprint
+        or context.using_consumeable
+        or not self.ability
+        or not self.ability.bachilatro_aka_copy
+        or not BACHILATRO_is_aka_target_valid(self)
+        or not G.consumeables
+    then
+        return effect, triggered
+    end
+
+    local enten_card
+    for _, consumable in ipairs(G.consumeables.cards) do
+        if consumable.config
+            and consumable.config.center_key == 'c_bachilatro_enten'
+        then
+            enten_card = consumable
+            break
+        end
+    end
+
+    if not enten_card then return effect, triggered end
+
+    -- Use Steamodded's Blueprint calculation path so the selected Joker's
+    -- returned effect is duplicated at the same scoring context.
+    local old_blueprint_card = context.blueprint_card
+    context.blueprint_card = enten_card
+    local copied_effect = SMODS.blueprint_effect(enten_card, self, context)
+    context.blueprint_card = old_blueprint_card
+    if not copied_effect then return effect, triggered end
+
+    -- Steamodded otherwise defaults the visual juice/message to the Joker
+    -- being evaluated. Route the copied trigger through Enten instead.
+    local visual_effect = copied_effect
+    while type(visual_effect) == 'table' do
+        visual_effect.card = enten_card
+        visual_effect.juice_card = enten_card
+        visual_effect.message_card = enten_card
+        visual_effect = visual_effect.extra
+    end
+
+    local effects = {}
+    if effect then effects[#effects + 1] = effect end
+    effects[#effects + 1] = copied_effect
+
+    local combined = #effects == 1 and effects[1]
+        or SMODS.merge_effects(effects)
+    return combined, triggered
+end
 
 function SMODS.current_mod.calculate(
     self,
     context
 )
-
-    --------------------------------------------------
-    -- AKA: COPIAR LOS JOKERS ELEGIDOS ESTE ROUND
-    --------------------------------------------------
-
-    local aka_targets = {}
-    local enten_card = nil
-
-    if G.jokers then
-        for _, joker in ipairs(G.jokers.cards) do
-            if joker.ability.bachilatro_aka_copy then
-                aka_targets[#aka_targets + 1] = joker
-            end
-        end
-    end
-
-    if #aka_targets > 0 and G.consumeables then
-        for _, consumable in ipairs(G.consumeables.cards) do
-            if consumable.config.center_key == 'c_bachilatro_enten' then
-                enten_card = consumable
-                break
-            end
-        end
-    end
-
-    local copied_effects = {}
-
-    if #aka_targets > 0
-        and enten_card
-        and not context.using_consumeable
-    then
-        for _, aka_target in ipairs(aka_targets) do
-            if BACHILATRO_is_aka_target_valid(aka_target) then
-                local effect = SMODS.blueprint_effect(
-                    enten_card,
-                    aka_target,
-                    context
-                )
-                if effect then
-                    copied_effects[#copied_effects + 1] = effect
-                end
-            end
-        end
-    end
-
-    local copied_effect = nil
-    if #copied_effects == 1 then
-        copied_effect = copied_effects[1]
-    elseif #copied_effects > 1 then
-        copied_effect = SMODS.merge_effects(unpack(copied_effects))
-    end
-
     if context.ante_change
         and context.ante_end
     then
@@ -561,5 +565,5 @@ function SMODS.current_mod.calculate(
         G.GAME.bachilatro_aka_used = nil
     end
 
-    return copied_effect
+    return nil
 end
