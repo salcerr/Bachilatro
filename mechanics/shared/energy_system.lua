@@ -12,6 +12,18 @@ function BACHILATRO_spend_energy(amount)
     BACHILATRO_refresh_energy_hud()
 end
 
+function BACHILATRO_reset_energy()
+    G.GAME.bachilatro_energy_max = BACHILATRO_ENERGY_MAX
+    G.GAME.bachilatro_energy = BACHILATRO_ENERGY_MAX
+end
+
+function BACHILATRO_refill_energy()
+    if not G.GAME then return end
+    G.GAME.bachilatro_energy_max = BACHILATRO_ENERGY_MAX
+    G.GAME.bachilatro_energy = BACHILATRO_ENERGY_MAX
+    BACHILATRO_refresh_energy_hud()
+end
+
 local bachilatro_original_start_run = Game.start_run
 
 function Game:start_run(args)
@@ -39,39 +51,4 @@ local bachilatro_original_delete_run = Game.delete_run
 function Game:delete_run()
     BACHILATRO_remove_energy_hud()
     return bachilatro_original_delete_run(self)
-end
-
-function SMODS.current_mod.reset_game_globals(run_start)
-    if not run_start then return end
-
-    G.GAME.bachilatro_energy_max = BACHILATRO_ENERGY_MAX
-    G.GAME.bachilatro_energy = BACHILATRO_ENERGY_MAX
-    G.GAME.bachilatro_kuregumo_study = 0
-    G.GAME.bachilatro_kuregumo_upgraded = false
-end
-
-function SMODS.current_mod.calculate(self, context)
-    if context.after and context.main_eval then
-        for _, playing_card in ipairs(G.playing_cards or {}) do
-            BACHILATRO_clear_kuregumo_status(playing_card)
-        end
-    end
-
-    if context.ante_change and context.ante_end then
-        G.GAME.bachilatro_energy_max = BACHILATRO_ENERGY_MAX
-        G.GAME.bachilatro_energy = BACHILATRO_ENERGY_MAX
-        BACHILATRO_refresh_energy_hud()
-    end
-
-    if context.end_of_round and context.main_eval then
-        for _, playing_card in ipairs(G.playing_cards or {}) do
-            BACHILATRO_clear_kuregumo_status(playing_card)
-        end
-        if G.jokers then
-            for _, joker in ipairs(G.jokers.cards) do
-                joker.ability.bachilatro_aka_copy = nil
-            end
-        end
-        G.GAME.bachilatro_aka_used = nil
-    end
 end

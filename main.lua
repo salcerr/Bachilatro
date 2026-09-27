@@ -11,6 +11,7 @@ SMODS.load_file('core/sword_presets.lua')()
 SMODS.load_file('mechanics/shared/energy_system.lua')()
 SMODS.load_file('mechanics/swords/enten_abilities.lua')()
 SMODS.load_file('mechanics/swords/kuregumo_abilities.lua')()
+SMODS.load_file('mechanics/shared/round_lifecycle.lua')()
 
 -- Use Chihiro's custom art once assets/1x/Chihiro.png is provided.
 BACHILATRO_CHIHIRO_ATLAS = 'Joker'
