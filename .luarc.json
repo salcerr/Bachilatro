@@ -1,0 +1,14 @@
+{
+    "workspace.library": [
+        "C:\\Users\\villa\\Downloads\\smods-main\\smods-main\\lsp_def"
+    ],
+    "diagnostics.disable": [
+        "undefined-global",
+        "lowercase-global",
+        "need-check-nil",
+        "duplicate-set-field",
+        "inject-field",
+        "undefined-field"
+    ],
+    "runtime.version": "LuaJIT"
+}

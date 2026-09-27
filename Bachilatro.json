@@ -1,0 +1,11 @@
+{
+    "id": "bachilatro",
+    "name": "Bachilatro",
+    "author": ["salcer"],
+    "description": "Mod inspirado en Kagurabachi para Balatro.",
+    "badge_colour": "FFFFFF",
+    "badge_text_colour": "000000",
+    "prefix": "bachilatro",
+    "main_file": "main.lua",
+    "version": "0.1.0"
+}
