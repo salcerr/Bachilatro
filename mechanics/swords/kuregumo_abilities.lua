@@ -70,8 +70,9 @@ local function add_sojo_study(affected_count)
 
     local required = preset.ability.study_required
     local current = G.GAME.bachilatro_kuregumo_study or 0
+    local study_gained = affected_count * preset.ability.study_per_affected_card
     if not G.GAME.bachilatro_kuregumo_upgraded then
-        G.GAME.bachilatro_kuregumo_study = math.min(required, current + affected_count)
+        G.GAME.bachilatro_kuregumo_study = math.min(required, current + study_gained)
         if G.GAME.bachilatro_kuregumo_study >= required then
             G.GAME.bachilatro_kuregumo_upgraded = true
             local kuregumo = BACHILATRO_find_sword('kuregumo')
@@ -92,7 +93,7 @@ local function add_sojo_study(affected_count)
     end
 
     card_eval_status_text(sojo, 'extra', nil, nil, nil, {
-        message = '+0.01 XMult',
+        message = '+' .. string.format('%.2f', preset.ability.xmult_per_use) .. ' XMult',
         colour = G.C.MULT
     })
 end
@@ -180,7 +181,9 @@ function BACHILATRO_use_kuregumo_ability(card)
             end
         end
         local blind = G.GAME.blind
-        local percent_per_card = upgraded and 0.04 or 0.03
+        local percent_per_card = upgraded
+            and ability.upgraded_score_reduction_per_wet_card
+            or ability.score_reduction_per_wet_card
         local reduction = percent_per_card * wet_count
         blind.chips = math.max(1, math.floor(blind.chips * (1 - reduction)))
         blind.chip_text = number_format(blind.chips)

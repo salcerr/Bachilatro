@@ -9,6 +9,7 @@ BACHILATRO_WIELDER_PRESETS.sojo = {
     ability = {
         xmult_start = 1.1,
         xmult_per_use = 0.01,
+        study_per_affected_card = 1,
         study_required = BACHILATRO_SWORD_PRESETS.kuregumo.wielder.study_required
     }
 }

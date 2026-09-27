@@ -33,8 +33,17 @@ BACHILATRO_SWORD_PRESETS.kuregumo = {
             key = 'yui',
             label = 'YUI',
             cost = 40,
+            score_reduction_per_wet_card = 0.03,
+            upgraded_score_reduction_per_wet_card = 0.04,
             can_use_func = 'bachilatro_can_use_yui',
             button_func = 'bachilatro_kuregumo_yui'
+        }
+    },
+    status_effects = {
+        shocked = {
+            mult_per_shocked_card_played = 1,
+            upgraded_xmult_base = 1,
+            upgraded_xmult_per_deck_card = 0.01
         }
     }
 }

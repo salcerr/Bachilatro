@@ -116,10 +116,10 @@ SMODS.Joker {
         text = {
             'Study Kuregumo through its techniques.',
             'Each use gives {X:mult,C:white}X#1#{} Mult and',
-            'each affected card gives {C:attention}1{} Study.',
-            'At {C:attention}#2#{} Study, improve Kuregumo.',
-            'Study: {C:attention}#3#/#2#{}',
-            'Current: {X:mult,C:white}X#4#{} Mult.'
+            'each affected card gives {C:attention}#2#{} Study.',
+            'At {C:attention}#3#{} Study, improve Kuregumo.',
+            'Study: {C:attention}#4#/#3#{}',
+            'Current: {X:mult,C:white}X#5#{} Mult.'
         }
     },
 
@@ -144,7 +144,13 @@ SMODS.Joker {
         local preset = BACHILATRO_WIELDER_PRESETS.sojo.ability
         local xmult = card and card.ability.extra.xmult or preset.xmult_start
         local study = G.GAME and G.GAME.bachilatro_kuregumo_study or 0
-        return { vars = { string.format('%.2f', preset.xmult_per_use), preset.study_required, study, string.format('%.2f', xmult) } }
+        return { vars = {
+            string.format('%.2f', preset.xmult_per_use),
+            preset.study_per_affected_card,
+            preset.study_required,
+            study,
+            string.format('%.2f', xmult)
+        } }
     end,
 
     add_to_deck = function(self, card, from_debuff)

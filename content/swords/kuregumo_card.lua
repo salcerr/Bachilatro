@@ -17,16 +17,23 @@ SMODS.Consumable {
     },
 
     loc_vars = function(self, info_queue, card)
+        local preset = BACHILATRO_SWORD_PRESETS.kuregumo
         local upgraded = BACHILATRO_kuregumo_is_upgraded()
+        local kou = BACHILATRO_get_sword_ability(preset, 'kou')
+        local yui = BACHILATRO_get_sword_ability(preset, 'yui')
+        local reduction_per_card = upgraded
+            and yui.upgraded_score_reduction_per_wet_card
+            or yui.score_reduction_per_wet_card
         local mei_text = upgraded
             and 'Turn every card in the deck into Shocked.'
             or 'Turn Wet cards in hand into Shocked.'
-        local yui_text = upgraded
-            and 'Blind target -4% per Wet card in deck.'
-            or 'Blind target -3% per Wet card in hand.'
+        local yui_text = 'Blind target -'
+            .. math.floor(reduction_per_card * 100)
+            .. '% per Wet card in '
+            .. (upgraded and 'deck.' or 'hand.')
         return {
             vars = {
-                'Wet up to 3 selected cards.',
+                'Wet up to ' .. kou.selection.max .. ' selected cards.',
                 BACHILATRO_get_sword_ability_cost('kuregumo', 'kou', upgraded),
                 mei_text,
                 BACHILATRO_get_sword_ability_cost('kuregumo', 'mei', upgraded),
