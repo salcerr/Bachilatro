@@ -51,7 +51,7 @@ SMODS.Joker {
         attention_text({
             text = 'ENTEN UPGRADED!',
             scale = 1.2,
-            hold = 3,
+            hold = 2,
             major = sword,
             backdrop_colour = G.C.BLUE,
             align = 'cm',

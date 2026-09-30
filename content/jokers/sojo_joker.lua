@@ -14,7 +14,7 @@ SMODS.Joker {
         }
     },
 
-    atlas = 'Joker',
+    atlas = BACHILATRO_SOJO_ATLAS,
     prefix_config = { atlas = false },
     pos = { x = 0, y = 0 },
     rarity = BACHILATRO_WIELDER_PRESETS.sojo.rarity,

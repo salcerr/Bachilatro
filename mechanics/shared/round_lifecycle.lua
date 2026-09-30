@@ -8,20 +8,11 @@ function SMODS.current_mod.reset_game_globals(run_start)
 end
 
 function SMODS.current_mod.calculate(self, context)
-    if context.after and context.main_eval then
-        for _, playing_card in ipairs(G.playing_cards or {}) do
-            BACHILATRO_clear_kuregumo_status(playing_card)
-        end
-    end
-
     if context.ante_change and context.ante_end then
         BACHILATRO_refill_energy()
     end
 
     if context.end_of_round and context.main_eval then
-        for _, playing_card in ipairs(G.playing_cards or {}) do
-            BACHILATRO_clear_kuregumo_status(playing_card)
-        end
         if G.jokers then
             for _, joker in ipairs(G.jokers.cards) do
                 joker.ability.bachilatro_aka_copy = nil

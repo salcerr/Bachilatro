@@ -25,6 +25,24 @@ if NFS.getInfo(SMODS.current_mod.path .. '/assets/1x/Chihiro.png') then
     BACHILATRO_CHIHIRO_ATLAS = 'bachilatro_chihiro_art'
 end
 
+BACHILATRO_SOJO_ATLAS = 'Joker'
+if NFS.getInfo(SMODS.current_mod.path .. '/assets/1x/Sojo.png') then
+    SMODS.Atlas {
+        key = 'sojo_art',
+        path = 'Sojo.png',
+        px = 71,
+        py = 95
+    }
+    BACHILATRO_SOJO_ATLAS = 'bachilatro_sojo_art'
+end
+
+SMODS.Atlas {
+    key = 'kuregumo_status',
+    path = 'KuregumoStatuses.png',
+    px = 71,
+    py = 95
+}
+
 SMODS.load_file('content/consumable_types/enchanted_blade_type.lua')()
 SMODS.load_file('content/enhancements/kuregumo_status_cards.lua')()
 SMODS.load_file('content/jokers/chihiro_joker.lua')()
@@ -37,8 +55,29 @@ SMODS.Atlas {
     py = 95
 }
 
+SMODS.Atlas {
+    key = 'kuregumo_art',
+    path = 'Kuregumo.png',
+    px = 71,
+    py = 95
+}
+
 SMODS.load_file('content/swords/enten_card.lua')()
 SMODS.load_file('content/swords/kuregumo_card.lua')()
+SMODS.Atlas {
+    key = 'enchanted_blade_pack_art',
+    path = 'EnchantedBladePack.png',
+    px = 71,
+    py = 95
+}
+SMODS.load_file('content/boosters/enchanted_blade_pack.lua')()
+SMODS.Atlas {
+    key = 'rokuhira_legacy_deck_art',
+    path = 'RokuhiraLegacyDeck.png',
+    px = 71,
+    py = 95
+}
+SMODS.load_file('content/decks/rokuhira_legacy_deck.lua')()
 
 SMODS.load_file('ui/swords/card_controls.lua')()
 SMODS.load_file('ui/energy_hud.lua')()

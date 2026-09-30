@@ -10,10 +10,10 @@ SMODS.Consumable {
         name = 'Enten',
         text = {
             "It yearns for its owner.",
-            "{C:attention}KURO{}: Destroy #1# selected cards. {C:blue}(#2# Energy){}",
-            "{C:attention}AKA{}: #3# {C:blue}(#4# Energy){}",
+            "{C:attention}KURO{}: Destroy #1# selected cards. {C:purple}(#2# Energy){}",
+            "{C:attention}AKA{}: #3# {C:purple}(#4# Energy){}",
             "{C:attention}NISHIKI{}: #5#",
-            "#6# {C:blue}(#7# Energy){}"
+            "#6# {C:purple}(#7# Energy){}"
         }
     },
 
@@ -61,7 +61,7 @@ SMODS.Consumable {
     cost = BACHILATRO_SWORD_PRESETS.enten.cost,
 
     config = {
-        extra_slots_used = 1
+        extra_slots_used = 0
     },
 
     can_use = function(self, card)

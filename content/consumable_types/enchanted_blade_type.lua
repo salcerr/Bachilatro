@@ -10,7 +10,7 @@ SMODS.ConsumableType {
 
     collection_rows = { 4, 4 },
 
-    shop_rate = 0,
+    shop_rate = 0.15,
 
     loc_txt = {
         name = 'Enchanted Blade',

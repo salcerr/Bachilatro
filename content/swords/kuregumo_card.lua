@@ -10,9 +10,9 @@ SMODS.Consumable {
         name = 'Kuregumo',
         text = {
             'Its three techniques flow as one.',
-            '{C:attention}KOU{}: Make up to #1# selected cards {C:blue}Wet{}. {C:blue}(#2# Energy){}',
-            '{C:attention}MEI{}: Shock #3#. {C:blue}(#4# Energy){}',
-            '{C:attention}YUI{}: Reduce Blind target by {C:chips}#5#{} per {C:blue}Wet{} card in #6#. {C:blue}(#7# Energy){}'
+            '{C:attention}KOU{}: Make up to #1# selected cards {C:blue}Wet{}. {C:purple}(#2# Energy){}',
+            '{C:attention}MEI{}: Shock #3#. {C:purple}(#4# Energy){}',
+            '{C:attention}YUI{}: Reduce Blind target by {C:chips}#5#{} per {C:blue}Wet{} card in #6#. {C:purple}(#7# Energy){}'
         }
     },
 
@@ -43,7 +43,7 @@ SMODS.Consumable {
     atlas = BACHILATRO_SWORD_PRESETS.kuregumo.atlas,
     pos = BACHILATRO_SWORD_PRESETS.kuregumo.pos,
     cost = BACHILATRO_SWORD_PRESETS.kuregumo.cost,
-    config = { extra_slots_used = 1 },
+    config = { extra_slots_used = 0 },
 
     can_use = function(self, card)
         return BACHILATRO_can_use_kuregumo_ability(card)

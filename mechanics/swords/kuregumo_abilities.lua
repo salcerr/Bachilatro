@@ -36,6 +36,17 @@ function BACHILATRO_clear_kuregumo_status(card)
     card.ability.bachilatro_shocked_from_center = nil
 end
 
+-- Expire Shocked only once that specific card actually enters the discard
+-- pile. This runs after play scoring and also covers manually discarded cards.
+local kuregumo_original_cardarea_emplace = CardArea.emplace
+function CardArea:emplace(card, ...)
+    local result = kuregumo_original_cardarea_emplace(self, card, ...)
+    if G and self == G.discard then
+        BACHILATRO_clear_kuregumo_status(card)
+    end
+    return result
+end
+
 local function apply_kuregumo_status(card, status)
     if not card or not card.config then return false end
     if card.config.center_key == kuregumo_center_key(status) then return false end
@@ -86,7 +97,7 @@ local function add_sojo_study(affected_count)
                 attention_text({
                     text = 'KUREGUMO MASTERED!',
                     scale = 1.1,
-                    hold = 3,
+                    hold = 2,
                     major = kuregumo,
                     backdrop_colour = G.C.RED,
                     align = 'cm',

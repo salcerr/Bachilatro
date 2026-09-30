@@ -1,8 +1,7 @@
 -- Temporary card enhancements created by Kuregumo.
 SMODS.Enhancement {
     key = 'wet',
-    atlas = 'centers',
-    prefix_config = { atlas = false },
+    atlas = 'kuregumo_status',
     pos = { x = 0, y = 0 },
     config = {},
     in_pool = function(self, args) return false end,
@@ -14,15 +13,14 @@ SMODS.Enhancement {
 
 SMODS.Enhancement {
     key = 'shocked',
-    atlas = 'centers',
-    prefix_config = { atlas = false },
+    atlas = 'kuregumo_status',
     pos = { x = 1, y = 0 },
     config = {},
     in_pool = function(self, args) return false end,
     loc_txt = {
         name = 'Shocked',
         text = {
-            '{C:attention}Shocked{} is removed after play or discard.',
+            '{C:attention}Shocked{} reverts to its prior Enhancement after play, discard, or Blind end.',
             'Each scored card gives {V:1}#1#{}.'
         }
     },
@@ -56,8 +54,6 @@ SMODS.Enhancement {
 
             local count = BACHILATRO_count_kuregumo_status('shocked', G.play.cards)
             return { mult = scoring.mult_per_shocked_card_played * count }
-        elseif context.discard and context.other_card == card then
-            BACHILATRO_clear_kuregumo_status(card)
         end
     end
 }

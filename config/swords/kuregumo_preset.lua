@@ -3,7 +3,7 @@ BACHILATRO_SWORD_PRESETS = BACHILATRO_SWORD_PRESETS or {}
 
 BACHILATRO_SWORD_PRESETS.kuregumo = {
     consumable_key = 'c_bachilatro_kuregumo',
-    atlas = 'enten_art', -- temporary placeholder until Kuregumo art is added
+    atlas = 'kuregumo_art',
     pos = { x = 0, y = 0 },
     cost = 3,
     wielder = {
