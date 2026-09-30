@@ -1,63 +1,40 @@
 --------------------------------------------------
--- BOTONES DE HABILIDADES DE ENTEN
+-- BOTONES DE HABILIDADES DE LAS ESPADAS
 --------------------------------------------------
 
 
 
 --------------------------------------------------
--- CREAR BOTÓN DE HABILIDAD
+-- CREAR BOTON DE HABILIDAD
 --------------------------------------------------
 
-local function bachilatro_make_ability_button(
-    card,
-    label,
-    button_key,
-    update_func
-)
-
+local function bachilatro_make_ability_button(card, label, button_key, update_func)
     return {
         n = G.UIT.R,
-
         config = {
             ref_table = card,
-
             r = 0.08,
             padding = 0.1,
-
             align = "cm",
-
             minw = 1.6,
             minh = 0.6,
-
             hover = true,
             shadow = true,
-
-            colour =
-                G.C.UI.BACKGROUND_INACTIVE,
-
+            colour = G.C.UI.BACKGROUND_INACTIVE,
             one_press = true,
-
             button = button_key,
             func = update_func
         },
-
         nodes = {
-
             {
                 n = G.UIT.T,
-
                 config = {
                     text = label,
-
-                    colour =
-                        G.C.UI.TEXT_LIGHT,
-
+                    colour = G.C.UI.TEXT_LIGHT,
                     scale = 0.38,
-
                     shadow = true
                 }
             }
-
         }
     }
 end
@@ -70,7 +47,18 @@ end
 
 function G.UIDEF.bachilatro_sword_ability_buttons(card)
     local preset = BACHILATRO_get_sword_preset_for_card(card)
-    if not preset then return { n = G.UIT.ROOT, config = { padding = 0, colour = G.C.CLEAR }, nodes = {} } end
+
+    if not preset then
+        return {
+            n = G.UIT.ROOT,
+            config = {
+                padding = 0,
+                colour = G.C.CLEAR
+            },
+            nodes = {}
+        }
+    end
+
     local ability_nodes = {}
 
     for _, ability in ipairs(preset.abilities or {}) do
@@ -84,11 +72,17 @@ function G.UIDEF.bachilatro_sword_ability_buttons(card)
 
     return {
         n = G.UIT.ROOT,
-        config = { padding = 0, colour = G.C.CLEAR },
+        config = {
+            padding = 0,
+            colour = G.C.CLEAR
+        },
         nodes = {
             {
                 n = G.UIT.C,
-                config = { padding = 0.12, align = 'cl' },
+                config = {
+                    padding = 0.12,
+                    align = 'cl'
+                },
                 nodes = ability_nodes
             }
         }
@@ -98,295 +92,211 @@ end
 
 
 --------------------------------------------------
--- BOTÓN SELL
+-- BOTON SELL
 --------------------------------------------------
 
 G.UIDEF.bachilatro_enten_ability_buttons = G.UIDEF.bachilatro_sword_ability_buttons
 
 function G.UIDEF.bachilatro_enten_sell_button(card)
-
     return {
-
         n = G.UIT.ROOT,
-
         config = {
             padding = 0,
             colour = G.C.CLEAR
         },
-
         nodes = {
-
             {
                 n = G.UIT.C,
-
                 config = {
                     ref_table = card,
-
                     align = "cr",
-
                     padding = 0.1,
-
                     r = 0.08,
-
                     minw = 1.25,
-
                     hover = true,
                     shadow = true,
-
-                    colour =
-                        G.C.UI.BACKGROUND_INACTIVE,
-
+                    colour = G.C.UI.BACKGROUND_INACTIVE,
                     one_press = true,
-
                     button = 'sell_card',
-
                     func = 'can_sell_card'
                 },
-
                 nodes = {
-
                     {
                         n = G.UIT.B,
-
                         config = {
                             w = 0.1,
                             h = 0.6
                         }
                     },
-
-
-
                     {
                         n = G.UIT.C,
-
                         config = {
                             align = "tm"
                         },
-
                         nodes = {
-
-
-
-                            --------------------------------------------------
-                            -- SELL
-                            --------------------------------------------------
-
                             {
                                 n = G.UIT.R,
-
                                 config = {
                                     align = "cm",
                                     maxw = 1.25
                                 },
-
                                 nodes = {
-
                                     {
                                         n = G.UIT.T,
-
                                         config = {
-                                            text =
-                                                localize('b_sell'),
-
-                                            colour =
-                                                G.C.UI.TEXT_LIGHT,
-
+                                            text = localize('b_sell'),
+                                            colour = G.C.UI.TEXT_LIGHT,
                                             scale = 0.4,
-
                                             shadow = true
                                         }
                                     }
-
                                 }
                             },
-
-
-
-                            --------------------------------------------------
-                            -- PRECIO
-                            --------------------------------------------------
-
                             {
                                 n = G.UIT.R,
-
                                 config = {
                                     align = "cm"
                                 },
-
                                 nodes = {
-
                                     {
                                         n = G.UIT.T,
-
                                         config = {
-                                            text =
-                                                localize('$'),
-
-                                            colour =
-                                                G.C.WHITE,
-
+                                            text = localize('$'),
+                                            colour = G.C.WHITE,
                                             scale = 0.4,
-
                                             shadow = true
                                         }
                                     },
-
-
-
                                     {
                                         n = G.UIT.T,
-
                                         config = {
-
                                             ref_table = card,
-
-                                            ref_value =
-                                                'sell_cost_label',
-
-                                            colour =
-                                                G.C.WHITE,
-
+                                            ref_value = 'sell_cost_label',
+                                            colour = G.C.WHITE,
                                             scale = 0.55,
-
                                             shadow = true
                                         }
                                     }
-
                                 }
                             }
-
                         }
                     }
-
                 }
             }
-
         }
     }
+end
+
+
+
+--------------------------------------------------
+-- DRAW DEL BOTON DE HABILIDADES (OVERRIDE DE INSTANCIA)
+-- Se ejecuta en el pase final de Game:draw (attention_text).
+-- Dibuja el UIBox y despues REDIBUJA la espada encima,
+-- para lograr: Joker/Consumible < Botones < Espada.
+--------------------------------------------------
+
+local function bachilatro_draw_sword_ability_button(button, ...)
+    UIBox.draw(button, ...)
+
+    local card = button.bachilatro_sword_card
+
+    if card
+        and card.highlighted
+        and card.states
+        and card.states.visible
+        and card.children
+        and card.children.use_button == button
+    then
+        card:draw('card')
+    end
 end
 
 
 
 --------------------------------------------------
 -- CARD:HIGHLIGHT
--- BOTONES DE ENTEN
+-- BOTONES DE ENTEN / KUREGUMO
 --------------------------------------------------
 
-local bachilatro_legacy_card_highlight =
-    Card.highlight
+local bachilatro_legacy_card_highlight = Card.highlight
 
+
+
+--------------------------------------------------
+-- MOSTRAR BOTONES DE HABILIDAD
+--------------------------------------------------
 
 local function bachilatro_show_sword_ability_button(card)
     if card.children.use_button then
         card.children.use_button:remove()
     end
 
-    card.children.use_button = UIBox{
+    local ability_button = UIBox{
         definition = G.UIDEF.bachilatro_sword_ability_buttons(card),
         config = {
             align = 'cl',
-            offset = { x = 0.30, y = 0 },
-            -- Keep the original Enten behavior: the UIBox is a child of the
-            -- sword card, so its full button hitboxes follow that card's draw
-            -- order and remain behind cards drawn above it (such as Jokers).
+            offset = {
+                x = 0.33,
+                y = 0
+            },
             parent = card
         }
     }
+
+    -- marca propia: distingue estos botones de los use_button de Jokers/consumibles
+    ability_button.bachilatro_sword_ability_button = true
+    ability_button.bachilatro_sword_card = card
+
+    -- pase final de Game:draw (despues de CardAreas y Cards)
+    ability_button.attention_text = true
+
+    -- despues de dibujarse, repinta la espada encima
+    ability_button.draw = bachilatro_draw_sword_ability_button
+
+    card.children.use_button = ability_button
 end
 
 
+
 function Card:highlight(is_highlighted)
-
     if BACHILATRO_get_sword_preset_for_card(self) then
-
-        self.highlighted =
-            is_highlighted
-
-
-
-        --------------------------------------------------
-        -- MOSTRAR BOTONES
-        --------------------------------------------------
+        self.highlighted = is_highlighted
 
         if self.highlighted
             and self.area
             and self.area.config.type ~= 'shop'
         then
-
-
-
-            --------------------------------------------------
-            -- BOTONES DE HABILIDADES
-            --------------------------------------------------
-
             bachilatro_show_sword_ability_button(self)
 
-
-
-            --------------------------------------------------
-            -- BOTÓN SELL
-            --------------------------------------------------
-
-            self.children.bachilatro_sell_button =
-                UIBox{
-
-                    definition =
-                        G.UIDEF.bachilatro_enten_sell_button(
-                            self
-                        ),
-
-                    config = {
-
-                        align = "cr",
-
-                        offset = {
-                            x = -0.35,
-                            y = 0
-                        },
-
-                        parent = self
-                    }
+            self.children.bachilatro_sell_button = UIBox{
+                definition = G.UIDEF.bachilatro_enten_sell_button(self),
+                config = {
+                    align = "cr",
+                    offset = {
+                        x = -0.35,
+                        y = 0
+                    },
+                    parent = self
                 }
-
-
-
+            }
         else
-
-
-
-            --------------------------------------------------
-            -- OCULTAR BOTONES
-            --------------------------------------------------
-
             if self.children.use_button then
-
                 self.children.use_button:remove()
-
                 self.children.use_button = nil
-
             end
-
-
 
             if self.children.bachilatro_sell_button then
-
                 self.children.bachilatro_sell_button:remove()
-
                 self.children.bachilatro_sell_button = nil
-
             end
-
         end
 
         return
     end
 
+    local result = bachilatro_legacy_card_highlight(self, is_highlighted)
 
-
-    local result = bachilatro_legacy_card_highlight(
-        self,
-        is_highlighted
-    )
     return result
 end
 
@@ -394,32 +304,65 @@ end
 
 --------------------------------------------------
 -- CARD:DRAW
--- SELL DETRÁS DE ENTEN
+-- - Los botones de habilidad de espada NO se dibujan aca:
+--   se dibujan en el pase final (ver override de instancia).
+--   Solo se sacan de children mientras dibuja la carta.
+-- - El Sell se sigue dibujando antes de la carta (queda
+--   detras de ella), igual que antes.
+-- - Los use_button de cartas normales no se tocan.
 --------------------------------------------------
 
 local bachilatro_original_card_draw = Card.draw
 
 function Card:draw(layer)
-    local sell = self.children.bachilatro_sell_button
-    if sell then
-        self.children.bachilatro_sell_button = nil
-        sell:draw()
-        local result = bachilatro_original_card_draw(self, layer)
-        self.children.bachilatro_sell_button = sell
-        return result
-    else
+    local children = self.children
+    local sell = children.bachilatro_sell_button
+    local ability_button = children.use_button
+
+    if not (ability_button and ability_button.bachilatro_sword_ability_button) then
+        ability_button = nil
+    end
+
+    if not sell and not ability_button then
         return bachilatro_original_card_draw(self, layer)
     end
+
+    if ability_button then
+        children.use_button = nil
+    end
+
+    if sell then
+        children.bachilatro_sell_button = nil
+        sell:draw()
+    end
+
+    local ok, result = pcall(bachilatro_original_card_draw, self, layer)
+
+    -- se restauran SIEMPRE, incluso si el draw original fallo
+    if sell then
+        children.bachilatro_sell_button = sell
+    end
+
+    if ability_button then
+        children.use_button = ability_button
+    end
+
+    if not ok then
+        error(result, 0)
+    end
+
+    return result
 end
 
 
+
 --------------------------------------------------
--- SELECCIÓN MULTIPLE DE JOKERS CONFIGURADA POR PRESET
+-- SELECCION MULTIPLE DE JOKERS
+-- CONFIGURADA POR PRESET
 --------------------------------------------------
 
 if CardArea and CardArea.add_to_highlighted then
-    local bachilatro_original_add_to_highlighted =
-        CardArea.add_to_highlighted
+    local bachilatro_original_add_to_highlighted = CardArea.add_to_highlighted
 
     function CardArea:add_to_highlighted(card, silent)
         if G.jokers and self == G.jokers and self.config then
@@ -431,16 +374,13 @@ if CardArea and CardArea.add_to_highlighted then
                 base = current
             end
 
-            local updated = BACHILATRO_sword_selection_limit(
-                'jokers', base
-            )
+            local updated = BACHILATRO_sword_selection_limit('jokers', base)
+
             self.bachilatro_selection_limit_base = base
             self.bachilatro_selection_limit_applied = updated
             self.config.highlighted_limit = updated
         end
 
-        return bachilatro_original_add_to_highlighted(
-            self, card, silent
-        )
+        return bachilatro_original_add_to_highlighted(self, card, silent)
     end
 end
