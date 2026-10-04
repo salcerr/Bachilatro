@@ -38,7 +38,7 @@ BACHILATRO_SWORD_PRESETS.kuregumo = {
     },
     status_effects = {
         shocked = {
-            mult_per_shocked_card_played = 1,
+            mult_per_shocked_card_played = 2,
             upgraded_xmult_base = 1,
             upgraded_xmult_per_deck_card = 0.01
         }

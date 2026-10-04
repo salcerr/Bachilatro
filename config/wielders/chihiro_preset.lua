@@ -2,9 +2,9 @@
 BACHILATRO_WIELDER_PRESETS = BACHILATRO_WIELDER_PRESETS or {}
 BACHILATRO_WIELDER_PRESETS.chihiro = {
     sword_key = 'enten',
-    rarity = 3,
-    cost = 6,
+    rarity = 2,
+    cost = 8,
     ability = {
-        xmult_per_blind = 0.05
+        xmult_per_blind = 0.5
     }
 }

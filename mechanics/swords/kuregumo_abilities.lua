@@ -2,8 +2,23 @@
 -- KUREGUMO STATUS, STUDY, AND ABILITY LOGIC
 --------------------------------------------------
 
+-- La mejora se gana con el Study de Sojo (flag permanente de la run), pero
+-- solo esta ACTIVA mientras Sojo este en tus jokers y no este debilitado.
+-- Si lo vendes, Kuregumo vuelve a la version normal; si lo recuperas, vuelve
+-- la mejora.
 function BACHILATRO_kuregumo_is_upgraded()
-    return G.GAME and G.GAME.bachilatro_kuregumo_upgraded == true or false
+    return G.GAME and G.GAME.bachilatro_kuregumo_upgraded == true
+        and BACHILATRO_sword_has_wielder('kuregumo') or false
+end
+
+-- Devuelve TODAS las cartas Shocked del mazo a su enhancement anterior.
+-- Se llama al terminar el Blind: las cartas Shocked que nunca se robaron
+-- (Mei mejorada afecta al mazo entero) no pasan por el descarte y se
+-- quedaban Shocked para el siguiente Blind.
+function BACHILATRO_clear_all_kuregumo_status()
+    for _, playing_card in ipairs(G.playing_cards or {}) do
+        BACHILATRO_clear_kuregumo_status(playing_card)
+    end
 end
 
 local function kuregumo_center_key(status)

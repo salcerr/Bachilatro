@@ -13,6 +13,8 @@ function SMODS.current_mod.calculate(self, context)
     end
 
     if context.end_of_round and context.main_eval then
+        BACHILATRO_clear_all_kuregumo_status()
+
         if G.jokers then
             for _, joker in ipairs(G.jokers.cards) do
                 joker.ability.bachilatro_aka_copy = nil

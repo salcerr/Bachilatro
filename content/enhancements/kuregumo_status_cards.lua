@@ -35,7 +35,7 @@ SMODS.Enhancement {
             )
         else
             effect = string.format(
-                '+%g Mult per Shocked card played this hand',
+                '+%g Mult per scoring Shocked card this hand',
                 scoring.mult_per_shocked_card_played
             )
         end
@@ -52,7 +52,15 @@ SMODS.Enhancement {
                 }
             end
 
-            local count = BACHILATRO_count_kuregumo_status('shocked', G.play.cards)
+            -- Solo cuentan las Shocked que puntuan (scoring_hand), no todas
+            -- las jugadas: un kicker Shocked que no puntua no suma.
+            local scoring_cards = {}
+            for _, played in ipairs(context.scoring_hand or { card }) do
+                if not played.debuff then
+                    scoring_cards[#scoring_cards + 1] = played
+                end
+            end
+            local count = BACHILATRO_count_kuregumo_status('shocked', scoring_cards)
             return { mult = scoring.mult_per_shocked_card_played * count }
         end
     end
