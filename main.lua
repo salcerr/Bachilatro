@@ -5,12 +5,15 @@
 SMODS.load_file('config/constants.lua')()
 SMODS.load_file('config/swords/enten_preset.lua')()
 SMODS.load_file('config/swords/kuregumo_preset.lua')()
+SMODS.load_file('config/swords/tobimune_preset.lua')()
 SMODS.load_file('config/wielders/chihiro_preset.lua')()
 SMODS.load_file('config/wielders/sojo_preset.lua')()
+SMODS.load_file('config/wielders/samura_preset.lua')()
 SMODS.load_file('core/sword_presets.lua')()
 SMODS.load_file('mechanics/shared/energy_system.lua')()
 SMODS.load_file('mechanics/swords/enten_abilities.lua')()
 SMODS.load_file('mechanics/swords/kuregumo_abilities.lua')()
+SMODS.load_file('mechanics/swords/tobimune_abilities.lua')()
 SMODS.load_file('mechanics/shared/round_lifecycle.lua')()
 SMODS.load_file('mechanics/shared/sword_limit.lua')()
 
@@ -37,6 +40,17 @@ if NFS.getInfo(SMODS.current_mod.path .. '/assets/1x/Sojo.png') then
     BACHILATRO_SOJO_ATLAS = 'bachilatro_sojo_art'
 end
 
+BACHILATRO_SAMURA_ATLAS = 'Joker'
+if NFS.getInfo(SMODS.current_mod.path .. '/assets/1x/Samura.png') then
+    SMODS.Atlas {
+        key = 'samura_art',
+        path = 'Samura.png',
+        px = 71,
+        py = 95
+    }
+    BACHILATRO_SAMURA_ATLAS = 'bachilatro_samura_art'
+end
+
 SMODS.Atlas {
     key = 'kuregumo_status',
     path = 'KuregumoStatuses.png',
@@ -48,6 +62,7 @@ SMODS.load_file('content/consumable_types/enchanted_blade_type.lua')()
 SMODS.load_file('content/enhancements/kuregumo_status_cards.lua')()
 SMODS.load_file('content/jokers/chihiro_joker.lua')()
 SMODS.load_file('content/jokers/sojo_joker.lua')()
+SMODS.load_file('content/jokers/samura_joker.lua')()
 
 SMODS.Atlas {
     key = 'enten_art',
@@ -65,6 +80,16 @@ SMODS.Atlas {
 
 SMODS.load_file('content/swords/enten_card.lua')()
 SMODS.load_file('content/swords/kuregumo_card.lua')()
+
+-- Placeholder: usa el arte de Enten hasta que exista assets/1x/Tobimune.png
+SMODS.Atlas {
+    key = 'tobimune_art',
+    path = NFS.getInfo(SMODS.current_mod.path .. '/assets/1x/Tobimune.png')
+        and 'Tobimune.png' or 'Enten.png',
+    px = 71,
+    py = 95
+}
+SMODS.load_file('content/swords/tobimune_card.lua')()
 SMODS.Atlas {
     key = 'enchanted_blade_pack_art',
     path = 'EnchantedBladePack.png',
@@ -81,4 +106,5 @@ SMODS.Atlas {
 SMODS.load_file('content/decks/rokuhira_legacy_deck.lua')()
 
 SMODS.load_file('ui/swords/card_controls.lua')()
+SMODS.load_file('ui/swords/tobimune_pickers.lua')()
 SMODS.load_file('ui/energy_hud.lua')()
