@@ -1,11 +1,11 @@
 --------------------------------------------------
 -- REGLAS Y HABILIDADES DE TOBIMUNE
--- CROW: cambia una carta de la mano por una del mazo.
--- OWL: sube la probabilidad de una rareza de Joker en la tienda (por Ante).
+-- KARASU: cambia una carta de la mano por una del mazo.
+-- FUKURO: sube la probabilidad de una rareza de Joker en la tienda (por Ante).
 -- SUZAKU: sube +1 de rank a cartas de la mano.
 --------------------------------------------------
 
-local ABILITY_KEYS = { 'crow', 'owl', 'suzaku' }
+local ABILITY_KEYS = { 'karasu', 'fukuro', 'suzaku' }
 
 local function upgraded(key)
     return BACHILATRO_sword_ability_is_upgraded('tobimune', key)
@@ -15,12 +15,12 @@ function BACHILATRO_tobimune_cost(key)
     return BACHILATRO_get_sword_ability_cost('tobimune', key, upgraded(key))
 end
 
-function BACHILATRO_tobimune_owl_chance()
-    local owl = BACHILATRO_get_sword_ability('tobimune', 'owl')
-    if upgraded('owl') then
-        return owl.upgraded_shop_joker_chance or owl.shop_joker_chance
+function BACHILATRO_tobimune_fukuro_chance()
+    local fukuro = BACHILATRO_get_sword_ability('tobimune', 'fukuro')
+    if upgraded('fukuro') then
+        return fukuro.upgraded_shop_joker_chance or fukuro.shop_joker_chance
     end
-    return owl.shop_joker_chance
+    return fukuro.shop_joker_chance
 end
 
 function BACHILATRO_tobimune_suzaku_range()
@@ -40,7 +40,7 @@ local function suzaku_targets()
     return {}
 end
 
-local function crow_source()
+local function karasu_source()
     if G.hand and #G.hand.highlighted == 1 then return G.hand.highlighted[1] end
     return nil
 end
@@ -50,11 +50,11 @@ local function can_use_tobimune(card, key)
     if (G.GAME.bachilatro_energy or 0) < BACHILATRO_tobimune_cost(key) then
         return false
     end
-    -- Owl se puede usar tambien en la tienda: tiene sentido usarla y rerollear.
-    if key == 'owl' then return true end
+    -- Fukuro se puede usar tambien en la tienda: tiene sentido usarla y rerollear.
+    if key == 'fukuro' then return true end
     if BACHILATRO_is_shop_context(card) then return false end
-    if key == 'crow' then
-        return crow_source() ~= nil and G.deck ~= nil and #G.deck.cards > 0
+    if key == 'karasu' then
+        return karasu_source() ~= nil and G.deck ~= nil and #G.deck.cards > 0
     elseif key == 'suzaku' then
         return G.GAME.blind ~= nil and #suzaku_targets() > 0
     end
@@ -67,13 +67,13 @@ function BACHILATRO_can_use_tobimune_ability(card)
 end
 
 --------------------------------------------------
--- CROW
+-- KARASU
 -- La carta de la mano baja al FONDO del mazo (CardArea:emplace inserta al
 -- principio en el mazo), asi no se vuelve a robar enseguida.
 --------------------------------------------------
 
-function BACHILATRO_crow_swap(sword, hand_card, deck_card)
-    local cost = BACHILATRO_tobimune_cost('crow')
+function BACHILATRO_karasu_swap(sword, hand_card, deck_card)
+    local cost = BACHILATRO_tobimune_cost('karasu')
     if not (sword and hand_card and deck_card and G.hand and G.deck)
         or hand_card.area ~= G.hand
         or deck_card.area ~= G.deck
@@ -85,7 +85,7 @@ function BACHILATRO_crow_swap(sword, hand_card, deck_card)
     BACHILATRO_spend_energy(cost)
     G.hand:unhighlight_all()
     card_eval_status_text(sword, 'extra', nil, nil, nil, {
-        message = 'CROW',
+        message = 'KARASU',
         colour = G.C.BLACK
     })
     -- draw_card ya encola sus propios eventos
@@ -94,29 +94,29 @@ function BACHILATRO_crow_swap(sword, hand_card, deck_card)
 end
 
 --------------------------------------------------
--- OWL
+-- FUKURO
 --------------------------------------------------
 
-function BACHILATRO_apply_owl(sword, rarity_key)
-    local cost = BACHILATRO_tobimune_cost('owl')
+function BACHILATRO_apply_fukuro(sword, rarity_key)
+    local cost = BACHILATRO_tobimune_cost('fukuro')
     if not G.GAME or (G.GAME.bachilatro_energy or 0) < cost then return end
 
     BACHILATRO_spend_energy(cost)
-    G.GAME.bachilatro_owl = { rarity = rarity_key }
+    G.GAME.bachilatro_fukuro = { rarity = rarity_key }
     if sword then
         card_eval_status_text(sword, 'extra', nil, nil, nil, {
-            message = 'OWL: ' .. string.upper(rarity_key),
+            message = 'FUKURO: ' .. string.upper(rarity_key),
             colour = G.C.PURPLE
         })
     end
 end
 
-local function owl_rarity_data()
-    local owl = G.GAME and G.GAME.bachilatro_owl
-    if not owl then return nil end
-    local ability = BACHILATRO_get_sword_ability('tobimune', 'owl')
+local function fukuro_rarity_data()
+    local fukuro = G.GAME and G.GAME.bachilatro_fukuro
+    if not fukuro then return nil end
+    local ability = BACHILATRO_get_sword_ability('tobimune', 'fukuro')
     for _, rarity in ipairs(ability.rarities) do
-        if rarity.key == owl.rarity then return rarity end
+        if rarity.key == fukuro.rarity then return rarity end
     end
 end
 
@@ -126,7 +126,7 @@ local function joker_matches_rarity(card, rarity)
         and (center.rarity == rarity.key or center.rarity == rarity.index)
 end
 
--- Cuando la tienda genera un Joker y Owl esta activa, con cierta probabilidad
+-- Cuando la tienda genera un Joker y Fukuro esta activa, con cierta probabilidad
 -- se pide un Joker de la rareza elegida. Se prueba pidiendola de tres formas
 -- (clave, indice, valor de sorteo) y se verifica la rareza REAL de la carta
 -- resultante, asi no dependemos de como interprete create_card el parametro.
@@ -134,7 +134,7 @@ local bachilatro_original_create_card = create_card
 
 function create_card(_type, area, legendary, _rarity, skip_materialize,
                      soulable, forced_key, key_append)
-    local rarity = owl_rarity_data()
+    local rarity = fukuro_rarity_data()
     if rarity
         and _type == 'Joker'
         and key_append == 'sho'
@@ -143,8 +143,8 @@ function create_card(_type, area, legendary, _rarity, skip_materialize,
         and not forced_key
         and G.shop_jokers
         and area == G.shop_jokers
-        and pseudorandom(pseudoseed('bachilatro_owl' .. G.GAME.round_resets.ante))
-            < BACHILATRO_tobimune_owl_chance()
+        and pseudorandom(pseudoseed('bachilatro_fukuro' .. G.GAME.round_resets.ante))
+            < BACHILATRO_tobimune_fukuro_chance()
     then
         for _, requested in ipairs({ rarity.key, rarity.index, rarity.poll }) do
             local card = bachilatro_original_create_card(
@@ -243,10 +243,10 @@ function BACHILATRO_use_tobimune_ability(card)
     card.ability.bachilatro_ability = nil
     if not key or not can_use_tobimune(card, key) then return end
 
-    if key == 'crow' then
-        BACHILATRO_open_crow_picker(card, crow_source())
-    elseif key == 'owl' then
-        BACHILATRO_open_owl_picker(card)
+    if key == 'karasu' then
+        BACHILATRO_open_karasu_picker(card, karasu_source())
+    elseif key == 'fukuro' then
+        BACHILATRO_open_fukuro_picker(card)
     else
         use_suzaku(card)
     end
@@ -269,16 +269,16 @@ local function begin_use(e, ability_id, key)
     G.FUNCS.use_card(e)
 end
 
-G.FUNCS.bachilatro_can_use_crow = function(e)
-    update_button(e, 'crow', 'bachilatro_tobimune_crow')
+G.FUNCS.bachilatro_can_use_karasu = function(e)
+    update_button(e, 'karasu', 'bachilatro_tobimune_karasu')
 end
-G.FUNCS.bachilatro_can_use_owl = function(e)
-    update_button(e, 'owl', 'bachilatro_tobimune_owl')
+G.FUNCS.bachilatro_can_use_fukuro = function(e)
+    update_button(e, 'fukuro', 'bachilatro_tobimune_fukuro')
 end
 G.FUNCS.bachilatro_can_use_suzaku = function(e)
     update_button(e, 'suzaku', 'bachilatro_tobimune_suzaku')
 end
 
-G.FUNCS.bachilatro_tobimune_crow = function(e) begin_use(e, 1, 'crow') end
-G.FUNCS.bachilatro_tobimune_owl = function(e) begin_use(e, 2, 'owl') end
+G.FUNCS.bachilatro_tobimune_karasu = function(e) begin_use(e, 1, 'karasu') end
+G.FUNCS.bachilatro_tobimune_fukuro = function(e) begin_use(e, 2, 'fukuro') end
 G.FUNCS.bachilatro_tobimune_suzaku = function(e) begin_use(e, 3, 'suzaku') end

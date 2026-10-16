@@ -5,15 +5,15 @@ function SMODS.current_mod.reset_game_globals(run_start)
     BACHILATRO_reset_energy()
     G.GAME.bachilatro_kuregumo_study = 0
     G.GAME.bachilatro_kuregumo_upgraded = false
-    G.GAME.bachilatro_owl = nil
+    G.GAME.bachilatro_fukuro = nil
     G.GAME.bachilatro_suzaku_used_blind = nil
 end
 
 function SMODS.current_mod.calculate(self, context)
     if context.ante_change and context.ante_end then
         BACHILATRO_refill_energy()
-        -- Owl dura hasta que termina el Ante
-        G.GAME.bachilatro_owl = nil
+        -- Fukuro dura hasta que termina el Ante
+        G.GAME.bachilatro_fukuro = nil
     end
 
     -- Suzaku solo cuenta para salvar de ESTE Blind

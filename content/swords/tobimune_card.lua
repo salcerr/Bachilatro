@@ -10,9 +10,9 @@ SMODS.Consumable {
         name = 'Tobimune',
         text = {
             'Black feathers answer its name.',
-            '{C:attention}CROW{}: Swap 1 selected card with',
+            '{C:attention}KARASU{}: Swap 1 selected card with',
             'a card from your deck. {C:purple}(#1# Energy){}',
-            '{C:attention}OWL{}: Choose a Joker rarity. This Ante,',
+            '{C:attention}FUKURO{}: Choose a Joker rarity. This Ante,',
             'shop Jokers have a {C:green}#2#{} chance to be it. {C:purple}(#3# Energy){}',
             '{C:attention}SUZAKU{}: Raise #4# selected cards by {C:attention}1{} rank. {C:purple}(#5# Energy){}'
         }
@@ -25,9 +25,9 @@ SMODS.Consumable {
             or ('up to ' .. suzaku_max)
         return {
             vars = {
-                BACHILATRO_tobimune_cost('crow'),
-                math.floor(BACHILATRO_tobimune_owl_chance() * 100 + 0.5) .. '%',
-                BACHILATRO_tobimune_cost('owl'),
+                BACHILATRO_tobimune_cost('karasu'),
+                math.floor(BACHILATRO_tobimune_fukuro_chance() * 100 + 0.5) .. '%',
+                BACHILATRO_tobimune_cost('fukuro'),
                 cards_text,
                 BACHILATRO_tobimune_cost('suzaku')
             }

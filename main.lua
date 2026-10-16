@@ -81,11 +81,9 @@ SMODS.Atlas {
 SMODS.load_file('content/swords/enten_card.lua')()
 SMODS.load_file('content/swords/kuregumo_card.lua')()
 
--- Placeholder: usa el arte de Enten hasta que exista assets/1x/Tobimune.png
 SMODS.Atlas {
     key = 'tobimune_art',
-    path = NFS.getInfo(SMODS.current_mod.path .. '/assets/1x/Tobimune.png')
-        and 'Tobimune.png' or 'Enten.png',
+    path = 'Tobimune.png',
     px = 71,
     py = 95
 }

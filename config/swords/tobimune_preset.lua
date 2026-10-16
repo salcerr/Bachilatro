@@ -9,21 +9,21 @@ BACHILATRO_SWORD_PRESETS.tobimune = {
     cost = 3,
     wielder = {
         joker_key = 'j_bachilatro_samura',
-        upgrade_abilities = { 'crow', 'owl', 'suzaku' }
+        upgrade_abilities = { 'karasu', 'fukuro', 'suzaku' }
     },
     abilities = {
         {
-            key = 'crow',
-            label = 'CROW',
+            key = 'karasu',
+            label = 'KARASU',
             cost = 40,
             upgraded_cost = 20,
-            can_use_func = 'bachilatro_can_use_crow',
-            button_func = 'bachilatro_tobimune_crow',
+            can_use_func = 'bachilatro_can_use_karasu',
+            button_func = 'bachilatro_tobimune_karasu',
             selection = { area = 'hand', min = 1, max = 1 }
         },
         {
-            key = 'owl',
-            label = 'OWL',
+            key = 'fukuro',
+            label = 'FUKURO',
             cost = 60,
             -- Chance that each Joker the shop generates comes from the chosen
             -- rarity until the Ante ends. `index` and `poll` are fallbacks for
@@ -35,8 +35,8 @@ BACHILATRO_SWORD_PRESETS.tobimune = {
                 { key = 'Uncommon', index = 2, poll = 0.80, label = 'Uncommon' },
                 { key = 'Rare',     index = 3, poll = 0.97, label = 'Rare' }
             },
-            can_use_func = 'bachilatro_can_use_owl',
-            button_func = 'bachilatro_tobimune_owl'
+            can_use_func = 'bachilatro_can_use_fukuro',
+            button_func = 'bachilatro_tobimune_fukuro'
         },
         {
             key = 'suzaku',
