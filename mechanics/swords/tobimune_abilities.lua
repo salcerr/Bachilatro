@@ -175,8 +175,7 @@ end
 
 local function raise_rank(card)
     if SMODS and SMODS.modify_rank then
-        SMODS.modify_rank(card, 1)
-    else
+        local _ = SMODS.modify_rank(card, 1)    else
         manual_rank_up(card)
     end
 end

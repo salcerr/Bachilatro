@@ -23,6 +23,8 @@ function SMODS.current_mod.calculate(self, context)
 
     if context.end_of_round and context.main_eval then
         BACHILATRO_clear_all_kuregumo_status()
+        -- las copias de En (Kumeyuri) desaparecen al terminar el Blind
+        BACHILATRO_destroy_kumeyuri_illusions()
 
         if G.jokers then
             for _, joker in ipairs(G.jokers.cards) do
