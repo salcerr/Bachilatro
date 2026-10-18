@@ -17,7 +17,7 @@ BACHILATRO_SWORD_PRESETS.kumeyuri = {
         {
             key = 'en',
             label = 'EN',
-            cost = 60,
+            cost = 40,
             -- Temporary copies of the selected card (they vanish when the Blind ends).
             copies = 2,
             upgraded_copies = 4,
@@ -28,7 +28,7 @@ BACHILATRO_SWORD_PRESETS.kumeyuri = {
         {
             key = 'yuu',
             label = 'YUU',
-            cost = 40,
+            cost = 20,
             -- Normal: one random property moves from the right card to the left one.
             -- Upgraded (Destructive Play): all of them move and the right card is destroyed.
             can_use_func = 'bachilatro_can_use_yuu',
