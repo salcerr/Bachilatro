@@ -20,7 +20,8 @@ end
 --------------------------------------------------
 
 function G.UIDEF.bachilatro_energy_hud()
-    local maximum = BACHILATRO_ENERGY_MAX or 100
+    local maximum = BACHILATRO_get_energy_max and BACHILATRO_get_energy_max()
+        or BACHILATRO_ENERGY_MAX or 100
     local energy = G.GAME and G.GAME.bachilatro_energy or 0
     local shown_energy = math.max(0, math.min(maximum, math.floor(energy + 0.5)))
     local current_colour = BACHILATRO_energy_colour(shown_energy, maximum)

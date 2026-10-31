@@ -3,7 +3,7 @@ local function BACHILATRO_pack_sword_keys()
     local keys = {}
     for _, preset in pairs(BACHILATRO_SWORD_PRESETS) do
         local key = preset.consumable_key
-        if key and G.P_CENTERS[key] then
+        if key and not preset.deck_only and G.P_CENTERS[key] then
             keys[#keys + 1] = key
         end
     end

@@ -8,16 +8,16 @@
 -- CREAR BOTON DE HABILIDAD
 --------------------------------------------------
 
-local function bachilatro_make_ability_button(card, label, button_key, update_func)
+local function bachilatro_make_ability_button(card, label, button_key, update_func, compact)
     return {
         n = G.UIT.R,
         config = {
             ref_table = card,
-            r = 0.08,
-            padding = 0.1,
+            r = compact and 0.06 or 0.08,
+            padding = compact and 0.04 or 0.1,
             align = "cm",
-            minw = 1.6,
-            minh = 0.6,
+            minw = compact and 1.5 or 1.6,
+            minh = compact and 0.38 or 0.6,
             hover = true,
             shadow = true,
             colour = G.C.UI.BACKGROUND_INACTIVE,
@@ -31,7 +31,7 @@ local function bachilatro_make_ability_button(card, label, button_key, update_fu
                 config = {
                     text = label,
                     colour = G.C.UI.TEXT_LIGHT,
-                    scale = 0.38,
+                    scale = compact and 0.3 or 0.38,
                     shadow = true
                 }
             }
@@ -61,12 +61,17 @@ function G.UIDEF.bachilatro_sword_ability_buttons(card)
 
     local ability_nodes = {}
 
+    -- con mas de 4 tecnicas (Magatsumi) los botones se achican para que la
+    -- columna entre en la altura de la carta
+    local compact = #(preset.abilities or {}) > 4
+
     for _, ability in ipairs(preset.abilities or {}) do
         ability_nodes[#ability_nodes + 1] = bachilatro_make_ability_button(
             card,
             ability.label,
             ability.button_func,
-            ability.can_use_func
+            ability.can_use_func,
+            compact
         )
     end
 
@@ -80,7 +85,7 @@ function G.UIDEF.bachilatro_sword_ability_buttons(card)
             {
                 n = G.UIT.C,
                 config = {
-                    padding = 0.12,
+                    padding = compact and 0.04 or 0.12,
                     align = 'cl'
                 },
                 nodes = ability_nodes
@@ -230,7 +235,12 @@ local bachilatro_legacy_card_highlight = Card.highlight
 local function bachilatro_show_sword_ability_button(card)
     if card.children.use_button then
         card.children.use_button:remove()
+        card.children.use_button = nil
     end
+
+    -- espada sellada (Magatsumi en la fase Yura): no tiene tecnicas
+    local preset = BACHILATRO_get_sword_preset_for_card(card)
+    if not preset or #(preset.abilities or {}) == 0 then return end
 
     local ability_button = UIBox{
         definition = G.UIDEF.bachilatro_sword_ability_buttons(card),

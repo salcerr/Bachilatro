@@ -12,15 +12,32 @@ function BACHILATRO_spend_energy(amount)
     BACHILATRO_refresh_energy_hud()
 end
 
+-- Maximo de energia: base + bonus (por ejemplo, Akemura suma +100).
+function BACHILATRO_get_energy_max()
+    local bonus = G.GAME and G.GAME.bachilatro_energy_max_bonus or 0
+    return BACHILATRO_ENERGY_MAX + bonus
+end
+
+function BACHILATRO_gain_energy(amount)
+    if not G.GAME then return end
+    local maximum = BACHILATRO_get_energy_max()
+    G.GAME.bachilatro_energy_max = maximum
+    G.GAME.bachilatro_energy = math.min(
+        maximum,
+        (G.GAME.bachilatro_energy or 0) + amount
+    )
+    BACHILATRO_refresh_energy_hud()
+end
+
 function BACHILATRO_reset_energy()
-    G.GAME.bachilatro_energy_max = BACHILATRO_ENERGY_MAX
-    G.GAME.bachilatro_energy = BACHILATRO_ENERGY_MAX
+    G.GAME.bachilatro_energy_max = BACHILATRO_get_energy_max()
+    G.GAME.bachilatro_energy = BACHILATRO_get_energy_max()
 end
 
 function BACHILATRO_refill_energy()
     if not G.GAME then return end
-    G.GAME.bachilatro_energy_max = BACHILATRO_ENERGY_MAX
-    G.GAME.bachilatro_energy = BACHILATRO_ENERGY_MAX
+    G.GAME.bachilatro_energy_max = BACHILATRO_get_energy_max()
+    G.GAME.bachilatro_energy = BACHILATRO_get_energy_max()
     BACHILATRO_refresh_energy_hud()
 end
 

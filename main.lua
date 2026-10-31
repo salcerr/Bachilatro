@@ -7,16 +7,19 @@ SMODS.load_file('config/swords/enten_preset.lua')()
 SMODS.load_file('config/swords/kuregumo_preset.lua')()
 SMODS.load_file('config/swords/tobimune_preset.lua')()
 SMODS.load_file('config/swords/kumeyuri_preset.lua')()
+SMODS.load_file('config/swords/magatsumi_preset.lua')()
 SMODS.load_file('config/wielders/chihiro_preset.lua')()
 SMODS.load_file('config/wielders/sojo_preset.lua')()
 SMODS.load_file('config/wielders/samura_preset.lua')()
 SMODS.load_file('config/wielders/hiruhiko_preset.lua')()
+SMODS.load_file('config/wielders/magatsumi_wielders.lua')()
 SMODS.load_file('core/sword_presets.lua')()
 SMODS.load_file('mechanics/shared/energy_system.lua')()
 SMODS.load_file('mechanics/swords/enten_abilities.lua')()
 SMODS.load_file('mechanics/swords/kuregumo_abilities.lua')()
 SMODS.load_file('mechanics/swords/tobimune_abilities.lua')()
 SMODS.load_file('mechanics/swords/kumeyuri_abilities.lua')()
+SMODS.load_file('mechanics/swords/magatsumi_abilities.lua')()
 SMODS.load_file('mechanics/shared/round_lifecycle.lua')()
 SMODS.load_file('mechanics/shared/sword_limit.lua')()
 
@@ -54,6 +57,28 @@ if NFS.getInfo(SMODS.current_mod.path .. '/assets/1x/Samura.png') then
     BACHILATRO_SAMURA_ATLAS = 'bachilatro_samura_art'
 end
 
+BACHILATRO_YURA_ATLAS = 'Joker'
+if NFS.getInfo(SMODS.current_mod.path .. '/assets/1x/Yura.png') then
+    SMODS.Atlas {
+        key = 'yura_art',
+        path = 'Yura.png',
+        px = 71,
+        py = 95
+    }
+    BACHILATRO_YURA_ATLAS = 'bachilatro_yura_art'
+end
+
+BACHILATRO_AKEMURA_ATLAS = 'Joker'
+if NFS.getInfo(SMODS.current_mod.path .. '/assets/1x/Akemura.png') then
+    SMODS.Atlas {
+        key = 'akemura_art',
+        path = 'Akemura.png',
+        px = 71,
+        py = 95
+    }
+    BACHILATRO_AKEMURA_ATLAS = 'bachilatro_akemura_art'
+end
+
 BACHILATRO_HIRUHIKO_ATLAS = 'Joker'
 if NFS.getInfo(SMODS.current_mod.path .. '/assets/1x/Hiruhiko.png') then
     SMODS.Atlas {
@@ -78,6 +103,8 @@ SMODS.load_file('content/jokers/chihiro_joker.lua')()
 SMODS.load_file('content/jokers/sojo_joker.lua')()
 SMODS.load_file('content/jokers/samura_joker.lua')()
 SMODS.load_file('content/jokers/hiruhiko_joker.lua')()
+SMODS.load_file('content/jokers/yura_joker.lua')()
+SMODS.load_file('content/jokers/akemura_joker.lua')()
 
 SMODS.Atlas {
     key = 'enten_art',
@@ -114,6 +141,16 @@ SMODS.Atlas {
 }
 SMODS.load_file('content/swords/kumeyuri_card.lua')()
 
+-- Si falta assets/1x/Magatsumi.png usa el arte de Enten para no romper el mod.
+SMODS.Atlas {
+    key = 'magatsumi_art',
+    path = NFS.getInfo(SMODS.current_mod.path .. '/assets/1x/Magatsumi.png')
+        and 'Magatsumi.png' or 'Enten.png',
+    px = 71,
+    py = 95
+}
+SMODS.load_file('content/swords/magatsumi_card.lua')()
+
 SMODS.Atlas {
     key = 'enchanted_blade_pack_art',
     path = 'EnchantedBladePack.png',
@@ -128,6 +165,16 @@ SMODS.Atlas {
     py = 95
 }
 SMODS.load_file('content/decks/rokuhira_legacy_deck.lua')()
+
+-- Si falta assets/1x/ShinuchiDeck.png usa el arte del mazo de Rokuhira.
+SMODS.Atlas {
+    key = 'shinuchi_deck_art',
+    path = NFS.getInfo(SMODS.current_mod.path .. '/assets/1x/ShinuchiDeck.png')
+        and 'ShinuchiDeck.png' or 'RokuhiraLegacyDeck.png',
+    px = 71,
+    py = 95
+}
+SMODS.load_file('content/decks/shinuchi_deck.lua')()
 
 SMODS.load_file('ui/swords/card_controls.lua')()
 SMODS.load_file('ui/swords/tobimune_pickers.lua')()

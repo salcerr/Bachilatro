@@ -19,12 +19,19 @@ function SMODS.current_mod.calculate(self, context)
     -- Suzaku solo cuenta para salvar de ESTE Blind
     if context.setting_blind then
         G.GAME.bachilatro_suzaku_used_blind = nil
+        -- Magatsumi: limpia efectos pendientes y drena el mazo (fase Yura)
+        BACHILATRO_magatsumi_on_blind_start()
     end
 
     if context.end_of_round and context.main_eval then
         BACHILATRO_clear_all_kuregumo_status()
         -- las copias de En (Kumeyuri) desaparecen al terminar el Blind
         BACHILATRO_destroy_kumeyuri_illusions()
+        -- Magatsumi: Tonbo no deja cartas forzadas, y cuenta el Blind superado
+        BACHILATRO_magatsumi_clear_forced()
+        if not context.game_over then
+            BACHILATRO_magatsumi_blind_beaten()
+        end
 
         if G.jokers then
             for _, joker in ipairs(G.jokers.cards) do
