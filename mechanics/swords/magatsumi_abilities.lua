@@ -225,11 +225,28 @@ local function in_hand_phase()
         and G.STATES and G.STATE == G.STATES.SELECTING_HAND
 end
 
+-- Packs tipo tarot / spectral / etc. donde tiene sentido usar Kodoku
+local function in_pack_phase()
+    if not G.STATES or not G.STATE then return false end
+    return G.STATE == G.STATES.TAROT_PACK
+        or G.STATE == G.STATES.SPECTRAL_PACK
+        or G.STATE == G.STATES.PLANET_PACK
+        or G.STATE == G.STATES.STANDARD_PACK
+        or G.STATE == G.STATES.BUFFOON_PACK
+        or G.STATE == G.STATES.SMODS_BOOSTER_OPENED
+end
+
 local function kodoku_targets()
-    if not G.hand then return {} end
     local targets = {}
-    for _, hand_card in ipairs(G.hand.highlighted) do
-        if has_rank(hand_card) then targets[#targets + 1] = hand_card end
+    if G.hand then
+        for _, hand_card in ipairs(G.hand.highlighted or {}) do
+            if has_rank(hand_card) then targets[#targets + 1] = hand_card end
+        end
+    end
+    if G.pack_cards then
+        for _, pack_card in ipairs(G.pack_cards.highlighted or {}) do
+            if has_rank(pack_card) then targets[#targets + 1] = pack_card end
+        end
     end
     return targets
 end
@@ -241,19 +258,26 @@ local function can_use_magatsumi(card, key, while_using)
     local state = BACHILATRO_magatsumi_state()
     if not card or not state or not state.awakened then return false end
     if G.OVERLAY_MENU then return false end
-    if not while_using and not in_hand_phase() then return false end
     if (G.GAME.bachilatro_energy or 0) < ability_cost(key) then return false end
+
+    -- Kodoku: mano o pack. El resto: solo durante la mano.
+    if key == 'kodoku' then
+        if not while_using and not (in_hand_phase() or in_pack_phase()) then
+            return false
+        end
+        local selection = ability('kodoku').selection
+        local targets = kodoku_targets()
+        local count = #targets
+        return count >= selection.min and count <= selection.max
+    end
+
+    if not while_using and not in_hand_phase() then return false end
 
     if key == 'kumo' or key == 'mukade' or key == 'cho' or key == 'hachi' then
         return not state[key]
     elseif key == 'tonbo' then
-        if #G.hand.highlighted ~= 1 then return false end
+        if not G.hand or #G.hand.highlighted ~= 1 then return false end
         return G.hand.highlighted[1].config.center ~= G.P_CENTERS.m_glass
-    elseif key == 'kodoku' then
-        local selection = ability('kodoku').selection
-        local count = #G.hand.highlighted
-        return count >= selection.min and count <= selection.max
-            and #kodoku_targets() == count
     end
     return false
 end
@@ -289,7 +313,10 @@ local function use_kodoku(sword)
     for i, target in ipairs(kodoku_targets()) do targets[i] = target end
     if #targets == 0 then return end
 
-    G.hand:unhighlight_all()
+    if G.hand then G.hand:unhighlight_all() end
+    if G.pack_cards and G.pack_cards.unhighlight_all then
+        G.pack_cards:unhighlight_all()
+    end
     BACHILATRO_spend_energy(ability_cost('kodoku'))
     announce(sword, 'KODOKU', G.C.PURPLE)
 
@@ -419,33 +446,40 @@ function BACHILATRO_akemura_calculate(joker, context)
     end
 end
 
--- KUMO: cuando las cartas jugadas se van al descarte, la primera se queda
--- "atrapada en la tela" y vuelve a la mano.
+-- KUMO: la primera carta jugada vuelve a la mano DESPUES del descarte normal.
+-- No sacamos la carta de G.play a mitad de camino (eso apilaba las cartas).
 local original_draw_from_play_to_discard = G.FUNCS.draw_from_play_to_discard
 
 if original_draw_from_play_to_discard then
     G.FUNCS.draw_from_play_to_discard = function(e)
         local state = BACHILATRO_magatsumi_state()
         local kept = state and state.kumo_card
-        if kept then
-            state.kumo_card = nil
-            if kept.area == G.play
-                and not (kept.destroyed or kept.shattered or kept.marked_to_be_destroyed)
-            then
-                G.play:remove_card(kept)
-                G.E_MANAGER:add_event(Event({
-                    trigger = 'after',
-                    delay = 0.2,
-                    func = function()
-                        G.hand:emplace(kept)
-                        kept:juice_up(0.4, 0.4)
-                        play_sound('card1')
-                        return true
-                    end
-                }))
-            end
+        if state then state.kumo_card = nil end
+
+        -- Primero que el juego mueva todo a descarte con normalidad
+        original_draw_from_play_to_discard(e)
+
+        if not kept or kept.destroyed or kept.shattered or kept.marked_to_be_destroyed then
+            return
         end
-        return original_draw_from_play_to_discard(e)
+
+        -- Despues la devolvemos a la mano
+        G.E_MANAGER:add_event(Event({
+            trigger = 'after',
+            delay = 0.15,
+            func = function()
+                if not kept or kept.destroyed or kept.shattered then return true end
+
+                if kept.area then
+                    kept.area:remove_card(kept)
+                end
+                G.hand:emplace(kept)
+                if G.hand.align_cards then G.hand:align_cards() end
+                kept:juice_up(0.4, 0.4)
+                play_sound('card1')
+                return true
+            end
+        }))
     end
 end
 
